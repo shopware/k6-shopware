@@ -15,5 +15,5 @@ export default function () {
   addProductToCart(page.id);
   visitCartPage();
   visitConfirmPage();
-  placeOrder();
+  console.log(placeOrder());
 }

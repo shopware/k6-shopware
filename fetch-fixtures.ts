@@ -1,29 +1,5 @@
 import { createAdminAPIClient } from "@shopware/api-client";
 
-const auth = (await (
-  await fetch(`${process.env.SHOP_URL}/api/oauth/token`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      client_id: "administration",
-      grant_type: "password",
-      username: process.env.SHOP_ADMIN_USERNAME,
-      password: process.env.SHOP_ADMIN_PASSWORD,
-    }),
-  })
-).json()) as {
-  access_token?: string;
-  refresh_token: string;
-  expires_in: number;
-};
-
-if (!auth.access_token) {
-  console.log(auth);
-  throw new Error("Could not authenticate");
-}
-
 import type {
   operationPaths,
   operations,
@@ -31,11 +7,20 @@ import type {
 
 export const adminApiClient = createAdminAPIClient<operations, operationPaths>({
   baseURL: `${process.env.SHOP_URL}/api`,
-  sessionData: {
-    accessToken: auth.access_token,
-    refreshToken: auth.refresh_token,
-    expirationTime: auth.expires_in,
-  },
+});
+
+const sessionData = await adminApiClient.invoke("token post /oauth/token", {
+  client_id: "administration",
+  grant_type: "password",
+  username: process.env.SHOP_ADMIN_USERNAME as string,
+  password: process.env.SHOP_ADMIN_PASSWORD as string,
+  scopes: "write",
+});
+
+adminApiClient.setSessionData({
+  accessToken: sessionData.access_token,
+  refreshToken: sessionData.refresh_token as string,
+  expirationTime: sessionData.expires_in,
 });
 
 async function fetchSalesChannel() {
@@ -79,6 +64,8 @@ async function fetchSalesChannel() {
   });
 
   Bun.write("fixtures/sales-channel.json", JSON.stringify(records));
+  console.log(`Collected ${records.length} sales channels`);
+  console.log(`Collected ${salutationIds.data.length} salutations`);
 
   return records[0];
 }
@@ -119,6 +106,7 @@ async function fetchSeoUrls(name: string) {
   });
 
   Bun.write(`fixtures/seo-${name}.json`, JSON.stringify(data));
+  console.log(`Collected ${data.length} seo urls for ${name}`);
 }
 
 await Promise.all([

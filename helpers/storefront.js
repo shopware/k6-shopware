@@ -179,4 +179,11 @@ export function placeOrder() {
     "Order placed": (r) =>
       r.status === 200 && r.body.includes("finish-order-details"),
   });
+
+  const parsed = parseHTML(res.body);
+
+  return parsed
+    .find(".finish-ordernumber[data-order-number]")
+    .attr("data-order-number")
+    .trim();
 }
