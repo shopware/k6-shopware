@@ -113,3 +113,17 @@ await Promise.all([
   fetchSeoUrls("frontend.navigation.page"),
   fetchSeoUrls("frontend.detail.page"),
 ]);
+
+const keywords = await adminApiClient.invoke(
+  "getProductSearchKeyword post /search/product-search-keyword",
+  {
+    limit: 500,
+  },
+);
+
+const uniqueKeywords = keywords.data
+  .map((k) => k.keyword)
+  .filter((value, index, array) => array.indexOf(value) === index);
+
+Bun.write("fixtures/keywords.json", JSON.stringify(uniqueKeywords));
+console.log(`Collected ${uniqueKeywords.length} search keywords`);

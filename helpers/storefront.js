@@ -19,6 +19,10 @@ const seoListingPage = new SharedArray("seoListingPage", function () {
   return JSON.parse(open("../fixtures/seo-frontend.navigation.page.json"));
 });
 
+const searchKeywords = new SharedArray("searchKeywords", function () {
+  return JSON.parse(open("../fixtures/keywords.json"));
+});
+
 export function visitStorefront() {
   const r = http.get(salesChannel[0].url);
   check(r, {
@@ -170,6 +174,21 @@ export function visitConfirmPage() {
   });
 }
 
+export function visitSearchPage() {
+  const term = getRandomItem(searchKeywords);
+
+  const res = http.get(
+    `${salesChannel[0].url}/search?search=${encodeURIComponent(term)}`,
+    {
+      tags: "frontend.search.page",
+    },
+  );
+
+  check(res, {
+    "Search page is loaded": (r) => r.status === 200,
+  });
+}
+
 export function placeOrder() {
   const res = postFormData(`${salesChannel[0].url}/checkout/order`, {
     tos: "on",
@@ -179,11 +198,4 @@ export function placeOrder() {
     "Order placed": (r) =>
       r.status === 200 && r.body.includes("finish-order-details"),
   });
-
-  const parsed = parseHTML(res.body);
-
-  return parsed
-    .find(".finish-ordernumber[data-order-number]")
-    .attr("data-order-number")
-    .trim();
 }
