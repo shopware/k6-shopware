@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@shopware/api-client": "0.0.0-canary-20240201124603",
+    "@shopware/api-client": "0.0.0-canary-20240205081542",
     "@types/bun": "^1.0.4"
   }
 }
