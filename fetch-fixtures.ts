@@ -87,7 +87,7 @@ async function fetchSeoUrls(name: string) {
           value: salesChannel.id,
         },
       ],
-      limit: 500,
+      limit: 1000,
     },
   );
 

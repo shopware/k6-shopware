@@ -4,6 +4,7 @@ import {
   placeOrder,
   visitCartPage,
   visitConfirmPage,
+  visitNavigationPage,
   visitProductDetailPage,
   visitSearchPage,
   visitStorefront,
@@ -11,10 +12,13 @@ import {
 
 export default function () {
   visitStorefront();
-  visitSearchPage();
   accountRegister();
-  const page = visitProductDetailPage();
-  addProductToCart(page.id);
+  visitSearchPage();
+  visitNavigationPage();
+  visitNavigationPage();
+  addProductToCart(visitProductDetailPage().id);
+  addProductToCart(visitProductDetailPage().id);
+  addProductToCart(visitProductDetailPage().id);
   visitCartPage();
   visitConfirmPage();
   placeOrder();

@@ -6,10 +6,10 @@ function between(min, max) {
 }
 
 export function getRandomItem(map) {
-  return map[between(0, map.length)];
+  return map[between(0, map.length - 1)];
 }
 
-export function postFormData(url, data) {
+export function postFormData(url, data, tag) {
   const formData = new FormData();
 
   for (const key in data) {
@@ -19,6 +19,9 @@ export function postFormData(url, data) {
   return http.post(url, formData.body(), {
     headers: {
       "Content-Type": "multipart/form-data; boundary=" + formData.boundary,
+    },
+    tags: {
+      name: tag,
     },
   });
 }
