@@ -83,11 +83,16 @@ async function fetchSeoUrls(name: string) {
         },
         {
           type: "equals",
+          field: "isDeleted",
+          value: false,
+        },
+        {
+          type: "equals",
           field: "salesChannelId",
           value: salesChannel.id,
         },
       ],
-      limit: 1000,
+      limit: 500,
     },
   );
 
