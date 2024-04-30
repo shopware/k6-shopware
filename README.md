@@ -9,7 +9,7 @@ This repository contains helpers and a example sceneario to run K6 against a Sho
 
 ## Usage
 
-Adjust the `.env` file with your Shopware Shop Credentials.
+Create an `.env` file with your Shopware Shop Credentials. See `.env.example` for reference.
 
 First install the npm packages `bun install`
 
