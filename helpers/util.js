@@ -1,7 +1,7 @@
 import { FormData } from "./form-data.js";
 import http from "k6/http";
 
-function between(min, max) {
+export function between(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
 

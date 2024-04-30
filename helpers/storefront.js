@@ -1,27 +1,8 @@
 import { check } from "k6";
 import http from "k6/http";
 import { parseHTML } from "k6/html";
-import { SharedArray } from "k6/data";
 import { getRandomItem, postFormData } from "./util.js";
-
-const salesChannel = new SharedArray("salesChannel", function () {
-  return JSON.parse(open("../fixtures/sales-channel.json"));
-});
-
-const seoProductDetailPage = new SharedArray(
-  "seoProductDetailPage",
-  function () {
-    return JSON.parse(open("../fixtures/seo-frontend.detail.page.json"));
-  },
-);
-
-const seoListingPage = new SharedArray("seoListingPage", function () {
-  return JSON.parse(open("../fixtures/seo-frontend.navigation.page.json"));
-});
-
-const searchKeywords = new SharedArray("searchKeywords", function () {
-  return JSON.parse(open("../fixtures/keywords.json"));
-});
+import { salesChannel, searchKeywords, seoListingPage, seoProductDetailPage } from './data.js';
 
 export function visitStorefront() {
   const r = http.get(salesChannel[0].url);
@@ -153,7 +134,7 @@ export function addProductToCart(productId) {
     const after = getCartInfo();
 
     check(after, {
-      "Item added to cart": (after) => after.count != before.count,
+      "Item added to cart": (after) => after.total != before.total,
     });
 }
 

@@ -45,6 +45,10 @@ async function fetchSalesChannel() {
     "salutation post /search-ids/salutation",
   );
 
+  const taxIds = await adminApiClient.invoke(
+    "tax post /search-ids/tax",
+  );
+
   const records = data.data.map((record) => {
     return {
       id: record.id,
@@ -53,6 +57,17 @@ async function fetchSalesChannel() {
       url: record.domains[0].url,
       countryIds: record.countries.map((e) => e.id),
       salutationIds: salutationIds.data,
+      taxIds: taxIds.data,
+      api: {
+        baseURL: `${process.env.SHOP_URL}/api`,
+        credentials: {
+          grant_type: "password",
+          client_id: "administration",
+          scopes: "write",
+          username: process.env.SHOP_ADMIN_USERNAME as string,
+          password: process.env.SHOP_ADMIN_PASSWORD as string,
+        },
+      },
     };
   });
 
@@ -107,7 +122,35 @@ async function fetchSeoUrls(name: string) {
   console.log(`Collected ${data.length} seo urls for ${name}`);
 }
 
+async function fetchMedia()
+{
+  const mediaIds = await adminApiClient.invoke(
+    "media post /search-ids/media",
+    {
+      limit: 500,
+    }
+  );
+
+  Bun.write(`fixtures/media.json`, JSON.stringify(mediaIds.data));
+  console.log(`Collected ${mediaIds.data.length} media ids`);
+}
+
+async function fetchProperties()
+{
+  const propertyIds = await adminApiClient.invoke(
+    "property_group_option post /search-ids/property-group-option",
+    {
+      limit: 500,
+    }
+  );
+
+  Bun.write(`fixtures/property_group_option.json`, JSON.stringify(propertyIds.data));
+  console.log(`Collected ${propertyIds.data.length} property ids`);
+}
+
 await Promise.all([
+  fetchProperties(),
+  fetchMedia(),
   fetchSeoUrls("frontend.navigation.page"),
   fetchSeoUrls("frontend.detail.page"),
 ]);
