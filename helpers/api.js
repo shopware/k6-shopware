@@ -1,7 +1,7 @@
 import { uuidv4 } from 'https://jslib.k6.io/k6-utils/1.4.0/index.js';
 import { between, getRandomItem } from './util.js';
 import { check } from "k6";
-import { salesChannel, seoProductDetailPage, seoListingPage,  media, propertyGroupOption } from './data.js';
+import { salesChannel, seoProductDetailPage, seoListingPage, media, propertyGroupOption } from './data.js';
 import http from "k6/http";
 
 let credentials = {};
@@ -32,8 +32,10 @@ export function useCredentials(creds) {
 export function productImport(count = 20) {
   const products = [];
 
+  const hasProperties = propertyGroupOption.length > 0;
+
   for (let i = 0; i < count; i++) {
-    products.push({
+    const product = {
       name: `Product ${i}`,
       description: `Description of product ${i}`,
       productNumber: uuidv4(),
@@ -62,15 +64,21 @@ export function productImport(count = 20) {
           mediaId: getRandomItem(media),
         }
       ],
-      properties: [
-        {
-          id: getRandomItem(propertyGroupOption),
-        }
-      ],
       taxId: getRandomItem(salesChannel[0].taxIds),
       stock: between(1, 500),
       isCloseout: false,
-    });
+    };
+
+    // Add properties only if propertyGroupOption has values
+    if (hasProperties) {
+      product.properties = [
+        {
+          id: getRandomItem(propertyGroupOption),
+        }
+      ];
+    }
+
+    products.push(product);
   }
 
   const payload = [
@@ -97,8 +105,7 @@ export function productImport(count = 20) {
   });
 }
 
-export function productChangeStocks(count = 20)
-{
+export function productChangeStocks(count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
@@ -132,8 +139,7 @@ export function productChangeStocks(count = 20)
   });
 }
 
-export function productChangePrice(count = 20)
-{
+export function productChangePrice(count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
