@@ -12,12 +12,16 @@ import {
 
 export default function () {
   visitStorefront();
-  accountRegister();
   visitSearchPage();
   visitNavigationPage();
+  accountRegister();
   visitNavigationPage();
   addProductToCart(visitProductDetailPage().id);
+  visitNavigationPage();
+  visitNavigationPage();
   addProductToCart(visitProductDetailPage().id);
+  visitNavigationPage();
+  visitNavigationPage();
   addProductToCart(visitProductDetailPage().id);
   visitCartPage();
   visitConfirmPage();
