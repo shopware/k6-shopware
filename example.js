@@ -17,7 +17,9 @@ export default function () {
   accountRegister();
   visitNavigationPage();
   addProductToCart(visitProductDetailPage().id);
+  visitSearchPage();
   visitNavigationPage();
+  visitSearchPage();
   visitNavigationPage();
   addProductToCart(visitProductDetailPage().id);
   visitNavigationPage();
