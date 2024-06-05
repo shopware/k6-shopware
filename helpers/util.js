@@ -1,6 +1,6 @@
-import { FormData } from "./form-data.js";
+import { FormData } from "../lib/form-data.js";
 import http from "k6/http";
-import { URL } from 'https://jslib.k6.io/url/1.0.0/index.js';
+import { URL } from '../lib/k6-utils.js';
 
 export function between(min, max) {
   return Math.floor(Math.random() * (max - min + 1) + min);
