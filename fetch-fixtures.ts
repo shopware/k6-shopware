@@ -1,63 +1,54 @@
-import { createAdminAPIClient } from "@shopware/api-client";
+import { ApiClient } from './api-client';
 
-import type {
-  operationPaths,
-  operations,
-} from "@shopware/api-client/admin-api-types";
+const apiClient = new ApiClient(process.env.SHOP_URL as string, process.env.SHOP_ADMIN_USERNAME as string, process.env.SHOP_ADMIN_PASSWORD as string)
 
-export const adminApiClient = createAdminAPIClient<operations, operationPaths>({
-  baseURL: `${process.env.SHOP_URL}/api`,
-  credentials: {
-    grant_type: "password",
-    client_id: "administration",
-    scopes: "write",
-    username: process.env.SHOP_ADMIN_USERNAME as string,
-    password: process.env.SHOP_ADMIN_PASSWORD as string,
-  },
-});
+type SalesChannel = {
+  id: string;
+  name: string;
+  accessKey: string;
+  domains: {
+    url: string;
+  }[],
+  countries: {
+    id: string;
+  }[]
+}
 
 async function fetchSalesChannel() {
-  const data = await adminApiClient.invoke(
-    "searchSalesChannel post /search/sales-channel",
-    {
-      fields: ["id", "name", "accessKey", "domains.url", "countries.id"],
-      filter: [
-        {
-          type: "equals",
-          field: "active",
-          value: true,
-        },
-        {
-          type: "not",
-          queries: [
-            {
-              type: "equals",
-              field: "name",
-              value: "Headless",
-            },
-          ],
-        },
-      ],
-    },
-  );
+  const response = await apiClient.post<{ data: SalesChannel[] }>('/search/sales-channel', {
+    fields: ["id", "name", "accessKey", "domains.url", "countries.id"],
+    filter: [
+      {
+        type: "equals",
+        field: "active",
+        value: true,
+      },
+      {
+        type: "not",
+        queries: [
+          {
+            type: "equals",
+            field: "name",
+            value: "Headless",
+          },
+        ],
+      },
+    ],
+  });
 
-  const salutationIds = await adminApiClient.invoke(
-    "salutation post /search-ids/salutation",
-  );
+  const salutationIds = await apiClient.post<{ data: string[] }>('/search-ids/salutation', {});
 
-  const taxIds = await adminApiClient.invoke(
-    "tax post /search-ids/tax",
-  );
+  const taxIds = await apiClient.post<{ data: string[] }>('/search-ids/tax', {});
 
-  const records = data.data.map((record) => {
+  const records = response.body.data.map((record) => {
     return {
       id: record.id,
       name: record.name,
       accessKey: record.accessKey,
       url: record.domains[0].url,
       countryIds: record.countries.map((e) => e.id),
-      salutationIds: salutationIds.data,
-      taxIds: taxIds.data,
+      salutationIds: salutationIds.body.data,
+      taxIds: taxIds.body.data,
       api: {
         baseURL: `${process.env.SHOP_URL}/api`,
         credentials: {
@@ -73,7 +64,7 @@ async function fetchSalesChannel() {
 
   Bun.write("fixtures/sales-channel.json", JSON.stringify(records));
   console.log(`Collected ${records.length} sales channels`);
-  console.log(`Collected ${salutationIds.data.length} salutations`);
+  console.log(`Collected ${salutationIds.body.data.length} salutations`);
 
   return records[0];
 }
@@ -81,37 +72,34 @@ async function fetchSalesChannel() {
 const salesChannel = await fetchSalesChannel();
 
 async function fetchSeoUrls(name: string) {
-  const seoUrls = await adminApiClient.invoke(
-    "searchSeoUrl post /search/seo-url",
-    {
-      fields: ["seoPathInfo", "foreignKey"],
-      filter: [
-        {
-          type: "equals",
-          field: "routeName",
-          value: name,
-        },
-        {
-          type: "equals",
-          field: "isCanonical",
-          value: true,
-        },
-        {
-          type: "equals",
-          field: "isDeleted",
-          value: false,
-        },
-        {
-          type: "equals",
-          field: "salesChannelId",
-          value: salesChannel.id,
-        },
-      ],
-      limit: 500,
-    },
-  );
+  const seoUrls = await apiClient.post<{ data: { seoPathInfo: string, foreignKey: string }[] }>('/search/seo-url', {
+    fields: ["seoPathInfo", "foreignKey"],
+    filter: [
+      {
+        type: "equals",
+        field: "routeName",
+        value: name,
+      },
+      {
+        type: "equals",
+        field: "isCanonical",
+        value: true,
+      },
+      {
+        type: "equals",
+        field: "isDeleted",
+        value: false,
+      },
+      {
+        type: "equals",
+        field: "salesChannelId",
+        value: salesChannel.id,
+      },
+    ],
+    limit: 500,
+  });
 
-  const data = seoUrls.data.map((seoUrl) => {
+  const data = seoUrls.body.data.map((seoUrl) => {
     return {
       url: `${salesChannel.url}/${seoUrl.seoPathInfo}`,
       id: seoUrl.foreignKey,
@@ -122,30 +110,22 @@ async function fetchSeoUrls(name: string) {
   console.log(`Collected ${data.length} seo urls for ${name}`);
 }
 
-async function fetchMedia()
-{
-  const mediaIds = await adminApiClient.invoke(
-    "media post /search-ids/media",
-    {
-      limit: 500,
-    }
-  );
+async function fetchMedia() {
+  const mediaIds = await apiClient.post<{ data: string[] }>('/search-ids/media', {
+    limit: 500,
+  });
 
-  Bun.write(`fixtures/media.json`, JSON.stringify(mediaIds.data));
-  console.log(`Collected ${mediaIds.data.length} media ids`);
+  Bun.write(`fixtures/media.json`, JSON.stringify(mediaIds.body.data));
+  console.log(`Collected ${mediaIds.body.data.length} media ids`);
 }
 
-async function fetchProperties()
-{
-  const propertyIds = await adminApiClient.invoke(
-    "property_group_option post /search-ids/property-group-option",
-    {
-      limit: 500,
-    }
-  );
+async function fetchProperties() {
+  const propertyIds = await apiClient.post<{ data: string[] }>('/search-ids/property-group', {
+    limit: 500,
+  });
 
-  Bun.write(`fixtures/property_group_option.json`, JSON.stringify(propertyIds.data));
-  console.log(`Collected ${propertyIds.data.length} property ids`);
+  Bun.write(`fixtures/property_group_option.json`, JSON.stringify(propertyIds.body.data));
+  console.log(`Collected ${propertyIds.body.data.length} property ids`);
 }
 
 await Promise.all([
@@ -155,14 +135,11 @@ await Promise.all([
   fetchSeoUrls("frontend.detail.page"),
 ]);
 
-const keywords = await adminApiClient.invoke(
-  "getProductSearchKeyword post /search/product-search-keyword",
-  {
-    limit: 500,
-  },
-);
+const keywords = await apiClient.post<{ data: { keyword: string }[] }>('/search/product-search-keyword', {
+  limit: 500,
+});
 
-const uniqueKeywords = keywords.data
+const uniqueKeywords = keywords.body.data
   .map((k) => k.keyword)
   .filter((value, index, array) => array.indexOf(value) === index);
 

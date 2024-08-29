@@ -13,8 +13,8 @@ export function visitStorefront() {
 
 export function accountRegister() {
   const randomString =
-      Math.random().toString(36).substring(2, 15) +
-      Math.random().toString(36).substring(2, 15);
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
 
   const email = `${randomString}@test.de`;
 
@@ -116,26 +116,26 @@ export function getCartInfo() {
 }
 
 export function addProductToCart(productId) {
-    const data = {
-      redirectTo: "frontend.checkout.cart.page",
-    };
+  const data = {
+    redirectTo: "frontend.checkout.cart.page",
+  };
 
-    data[`lineItems[${productId}][quantity]`] = "1";
-    data[`lineItems[${productId}][id]`] = productId;
-    data[`lineItems[${productId}][type]`] = "product";
-    data[`lineItems[${productId}][referencedId]`] = productId;
-    data[`lineItems[${productId}][stackable]`] = "1";
-    data[`lineItems[${productId}][removable]`] = "1";
+  data[`lineItems[${productId}][quantity]`] = "1";
+  data[`lineItems[${productId}][id]`] = productId;
+  data[`lineItems[${productId}][type]`] = "product";
+  data[`lineItems[${productId}][referencedId]`] = productId;
+  data[`lineItems[${productId}][stackable]`] = "1";
+  data[`lineItems[${productId}][removable]`] = "1";
 
-    const before = getCartInfo();
+  const before = getCartInfo();
 
-    postFormData(`${salesChannel[0].url}/checkout/line-item/add`, data, "frontend.checkout.line-item.add");
+  postFormData(`${salesChannel[0].url}/checkout/line-item/add`, data, "frontend.checkout.line-item.add");
 
-    const after = getCartInfo();
+  const after = getCartInfo();
 
-    check(after, {
-      "Item added to cart": (after) => after.total != before.total,
-    });
+  check(after, {
+    "Item added to cart": (after) => after.total != before.total,
+  });
 }
 
 export function visitCartPage() {
@@ -148,9 +148,9 @@ export function visitCartPage() {
 
 export function visitConfirmPage() {
   const res = http.get(`${salesChannel[0].url}/checkout/confirm`, {
-      tags: {
-          name: "frontend.checkout.confirm.page",
-      },
+    tags: {
+      name: "frontend.checkout.confirm.page",
+    },
   });
 
   check(res, {

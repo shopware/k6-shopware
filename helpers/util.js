@@ -34,7 +34,10 @@ export function postFormData(url, data, tag) {
     let redirectUrl = response.headers.Location;
 
     if (!redirectUrl.startsWith('http')) {
-      redirectUrl = new URL(redirectUrl, url).toString();
+      const regex = /(http[s]?:\/\/\w+(\:\d+)?)/gm;
+
+      const match = url.match(regex);
+      redirectUrl = match[0] + redirectUrl;
     }
 
     // Make the GET request to the redirect URL
