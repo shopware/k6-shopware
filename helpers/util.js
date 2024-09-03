@@ -34,7 +34,7 @@ export function postFormData(url, data, tag) {
     let redirectUrl = response.headers.Location;
 
     if (!redirectUrl.startsWith('http')) {
-      const regex = /(http[s]?:\/\/\w+(\:\d+)?)/gm;
+      const regex = /^(?:(http[s]?):\/\/)?([a-z0-9_\-.]+)(?:\:([0-9]+))?/gm;
 
       const match = url.match(regex);
       redirectUrl = match[0] + redirectUrl;
