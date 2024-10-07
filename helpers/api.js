@@ -1,8 +1,15 @@
-import { uuidv4 } from './k6-utils.js';
 import { between, getRandomItem } from './util.js';
 import { check } from "k6";
 import { salesChannel, seoProductDetailPage, seoListingPage, media, propertyGroupOption } from './data.js';
 import http from "k6/http";
+
+function uuidv4() {
+  return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+}
 
 let credentials = {};
 
@@ -31,8 +38,6 @@ export function useCredentials(creds) {
 */
 export function productImport(count = 20) {
   const products = [];
-
-  const hasProperties = propertyGroupOption.length > 0;
 
   for (let i = 0; i < count; i++) {
     const product = {
@@ -68,15 +73,6 @@ export function productImport(count = 20) {
       stock: between(1, 500),
       isCloseout: false,
     };
-
-    // Add properties only if propertyGroupOption has values
-    if (hasProperties) {
-      product.properties = [
-        {
-          id: getRandomItem(propertyGroupOption),
-        }
-      ];
-    }
 
     products.push(product);
   }

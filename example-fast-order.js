@@ -12,9 +12,6 @@ export default function () {
   visitStorefront();
   accountRegister();
   addProductToCart(visitProductDetailPage().id);
-  addProductToCart(visitProductDetailPage().id);
-  addProductToCart(visitProductDetailPage().id);
-  addProductToCart(visitProductDetailPage().id);
   visitCartPage();
   visitConfirmPage();
   placeOrder();
