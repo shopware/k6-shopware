@@ -40,7 +40,7 @@ export function accountRegister() {
   return email;
 }
 
-export function guestOrder() {
+export function guestRegister() {
   const randomString =
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
