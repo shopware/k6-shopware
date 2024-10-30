@@ -40,6 +40,35 @@ export function accountRegister() {
   return email;
 }
 
+export function guestOrder() {
+  const randomString =
+    Math.random().toString(36).substring(2, 15) +
+    Math.random().toString(36).substring(2, 15);
+
+  const email = `${randomString}@test.de`;
+
+  // guest "registration" with `guest: true`
+  const register = postFormData(`${salesChannel[0].url}/account/register`, {
+    redirectTo: "frontend.account.home.page",
+    salutationId: salesChannel[0].salutationIds[0],
+    firstName: "John",
+    lastName: "Doe",
+    email: email,
+    password: "shopware",
+    guest: "true", // guest flag
+    "billingAddress[street]": "Test Strasse 1",
+    "billingAddress[zipcode]": "12345",
+    "billingAddress[city]": "Test City",
+    "billingAddress[countryId]": salesChannel[0].countryIds[0],
+  }, "frontend.account.register");
+
+  check(register, {
+    "Guest account created": (r) => r.status === 200,
+    "Guest started session": (r) => r.body.includes("Your profile"),
+  });
+  return email;
+}
+
 export function accountLogin(email, password = "shopware") {
   const login = postFormData(`${salesChannel[0].url}/account/login`, {
     username: email,
