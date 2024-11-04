@@ -40,7 +40,13 @@ export function postFormData(url, data, tag) {
     }
 
     // Make the GET request to the redirect URL
-    let redirectResponse = http.get(redirectUrl);
+    let redirectResponse = http.get(redirectUrl,
+      {
+        tags: {
+          name:  tag + "_redirect",
+        },
+      },
+    );
 
     return redirectResponse
   } else {
