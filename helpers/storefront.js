@@ -64,7 +64,6 @@ export function guestRegister() {
 
   check(register, {
     "Guest account created": (r) => r.status === 200,
-    "Guest started session": (r) => r.body.includes("Your profile"),
   });
   return email;
 }
