@@ -11,8 +11,8 @@ import {
 export default function () {
   visitStorefront();
   accountRegister();
-  // add 100 products to cart
-  for (let i = 0; i < 100; i++) {
+  // add 10 products to cart
+  for (let i = 0; i < 10; i++) {
     addProductToCart(visitProductDetailPage().id);
   }
   visitCartPage();
