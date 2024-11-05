@@ -14,19 +14,19 @@ export const options = {
     browse_only: {
       executor: 'constant-vus',
       vus: 10,
-      duration: '5m',
+      duration: '30s',
       exec: 'browseOnly',
     },
     fast_buy: {
       executor: 'constant-vus',
       vus: 1,
-      duration: '5m',
+      duration: '30s',
       exec: 'fastBuy',
     },
     import: {
       executor: 'constant-vus',
       vus: 1,
-      duration: '5m',
+      duration: '30s',
       exec: 'importer',
     }
   },

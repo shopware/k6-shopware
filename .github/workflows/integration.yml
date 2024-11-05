@@ -1,0 +1,63 @@
+name: Integration
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+concurrency:
+    group: integration-${{ github.base_ref }}
+    cancel-in-progress: true
+
+jobs:
+    integration:
+        name: ${{ matrix.file }}
+        runs-on: ubuntu-latest
+        strategy:
+            fail-fast: false
+            matrix:
+                file:
+                    - 'example-api.js'
+                    - 'example-big-cart.js'
+                    - 'example-fast-order.js'
+                    - 'example-guest-order.js'
+                    - 'example-multi-scenario.js'
+                    - 'example.js'
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Install Bun
+              uses: oven-sh/setup-bun@v2
+              with:
+                bun-version: latest
+
+            - name: Install dependencies
+              run: bun install
+
+            - name: Setup Shopware
+              uses: shopware/setup-shopware@main
+              with:
+                env: prod
+                install: true
+                path: shopware
+
+            - name: Generate Demo Data
+              working-directory: shopware
+              run: |
+                bin/console framework:demodata --products=20
+                bin/console dal:refresh:index
+
+            - name: Fetch fixtures
+              run: bun run fetch-fixtures.ts
+              env:
+                SHOP_URL: http://localhost:8000
+                SHOP_ADMIN_USERNAME: admin
+                SHOP_ADMIN_PASSWORD: shopware
+
+            - name: Setup K6
+              uses: grafana/setup-k6-action@v1
+
+            - name: Run local k6 test
+              uses: grafana/run-k6-action@v1
+              with:
+                path: ${{ matrix.file }}
