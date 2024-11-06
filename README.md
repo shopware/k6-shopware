@@ -19,3 +19,7 @@ Run `k6 run example.js` to run the example scenario.
 The example scenario will create a new customer, add a product to the cart and checkout the cart.
 
 You can adjust with `-u USERS --iterations ITERATORS` how often this and parallel this scenario should run.
+
+## For more information
+
+See the [K6 documentation](https://k6.io/docs/) or the [Shopware Documentation](https://developer.shopware.com/docs/guides/hosting/performance/k6.html).
