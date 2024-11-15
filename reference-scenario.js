@@ -9,6 +9,7 @@ import {
   visitStorefront,
 } from "./helpers/storefront.js";
 import {between} from "./helpers/util.js";
+import { Counter } from 'k6/metrics';
 
 export const options = {
   scenarios: {
@@ -32,6 +33,8 @@ export const options = {
     }
   },
 };
+
+let orderCounter = new Counter('orders');
 
 export function setup() {
   const customerEmail = accountRegister();
@@ -65,7 +68,7 @@ export function browseAndBuy() {
 
     visitCartPage();
     visitConfirmPage();
-    placeOrder();
+    placeOrder(orderCounter);
 }
 
 export function loggedInFastBuy(data) {
@@ -73,5 +76,5 @@ export function loggedInFastBuy(data) {
   addProductToCart(visitProductDetailPage().id);
   visitCartPage();
   visitConfirmPage();
-  placeOrder();
+  placeOrder(orderCounter);
 }

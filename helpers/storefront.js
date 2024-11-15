@@ -203,12 +203,16 @@ export function visitSearchPage() {
   });
 }
 
-export function placeOrder() {
+export function placeOrder(orderCounter) {
   const res = postFormData(`${salesChannel[0].url}/checkout/order`, {
     tos: "on",
   }, 'frontend.checkout.order');
 
-  check(res, {
+  const orderPlaced = check(res, {
     "Order placed": (r) => r.status === 200 && r.body.includes("finish-order-details"),
   });
+
+  if (orderPlaced) {
+    orderCounter.add(1);
+  }
 }
