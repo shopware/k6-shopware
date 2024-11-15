@@ -100,7 +100,11 @@ export function visitProductDetailPage() {
     "Check product detail page": (r) => r.status === 200 || r.status === 404,
   });
 
-  return page;
+  const doc = parseHTML(productDetailPage.body);
+  const productID = doc.find('meta[itemprop="productID"]').attr('content');
+
+  return productID;
+
 }
 
 export function visitNavigationPage() {
@@ -205,7 +209,7 @@ export function visitSearchPage() {
 
 export function placeOrder(orderCounter) {
   const res = postFormData(`${salesChannel[0].url}/checkout/order`, {
-    tos: "on",
+    tos: "on", revocation: "on"
   }, 'frontend.checkout.order');
 
   const orderPlaced = check(res, {

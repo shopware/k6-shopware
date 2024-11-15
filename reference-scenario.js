@@ -63,7 +63,7 @@ export function browseAndBuy() {
     for (let i = 0; i < cartItems + 1; i++) {
       visitNavigationPage();
       visitProductDetailPage()
-      addProductToCart(visitProductDetailPage().id);
+      addProductToCart(visitProductDetailPage());
     }
 
     visitCartPage();
@@ -73,7 +73,7 @@ export function browseAndBuy() {
 
 export function loggedInFastBuy(data) {
   accountLogin(data.customerEmail);
-  addProductToCart(visitProductDetailPage().id);
+  addProductToCart(visitProductDetailPage());
   visitCartPage();
   visitConfirmPage();
   placeOrder(orderCounter);
