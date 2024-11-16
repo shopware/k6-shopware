@@ -96,14 +96,23 @@ export function visitProductDetailPage() {
       name: "frontend.detail.page",
     },
   });
-  check(productDetailPage, {
-    "Check product detail page": (r) => r.status === 200 || r.status === 404,
-  });
 
   const doc = parseHTML(productDetailPage.body);
   const productID = doc.find('meta[itemprop="productID"]').attr('content');
 
-  return productID;
+  const pageIsValid = check(productDetailPage, {
+    "Check status code of product detail page": (r) => r.status === 200 || r.status === 404,
+    "ProductID found in product detail page": () => {
+      return productID && productID.trim().length > 0;
+    },
+  });
+
+  if (pageIsValid) {
+    return productID;
+  }
+  else {
+    return null;
+  }
 
 }
 
