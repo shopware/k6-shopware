@@ -206,13 +206,14 @@ export function visitSearchPage() {
 export function placeOrder(orderCounter) {
   const res = postFormData(`${salesChannel[0].url}/checkout/order`, {
     tos: "on",
+    revocation: "on",
   }, 'frontend.checkout.order');
 
   const orderPlaced = check(res, {
     "Order placed": (r) => r.status === 200 && r.body.includes("finish-order-details"),
   });
 
-  if (orderPlaced) {
+  if (orderPlaced && orderCounter) {
     orderCounter.add(1);
   }
 }

@@ -99,12 +99,51 @@ async function fetchSeoUrls(name: string) {
     limit: 500,
   });
 
-  const data = seoUrls.body.data.map((seoUrl) => {
+  let data = seoUrls.body.data.map((seoUrl) => {
     return {
       url: `${salesChannel.url}/${seoUrl.seoPathInfo}`,
       id: seoUrl.foreignKey,
     };
   });
+
+  if (name === 'frontend.detail.page') {
+    const productIds = data.map((seoUrl) => seoUrl.id);
+    
+    const filteredProductIds = await apiClient.post<{data: string[]}>('/search-ids/product', {
+      ids: productIds,
+      filter: [
+        {
+          type: "equals",
+          field: "active",
+          value: true,
+        },
+        {
+          type: 'multi',
+          operator: 'OR',
+          queries: [
+            {
+              type: "equals",
+              field: "childCount",
+              value: 0,
+            },
+            {
+              type: "not",
+              operator: "AND",
+              queries: [
+                {
+                  type: "equals",
+                  field: "parentId",
+                  value: null
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }, {"sw-inheritance": "1"});
+
+    data = data.filter((seoUrl) => filteredProductIds.body.data.includes(seoUrl.id));
+  }
 
   Bun.write(`fixtures/seo-${name}.json`, JSON.stringify(data));
   console.log(`Collected ${data.length} seo urls for ${name}`);
