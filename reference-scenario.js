@@ -8,7 +8,8 @@ import {
   visitSearchPage,
   visitStorefront,
 } from "./helpers/storefront.js";
-import {between} from "./helpers/util.js";
+import { productChangePrice, fetchBearerToken, productImport, productChangeStocks, useCredentials } from "./helpers/api.js";
+import { between } from "./helpers/util.js";
 import { Counter } from 'k6/metrics';
 
 export const options = {
@@ -30,6 +31,12 @@ export const options = {
       vus: 1,
       duration: '5m',
       exec: 'loggedInFastBuy',
+    },
+    api_import: {
+      executor: 'constant-vus',
+      vus: 2,
+      duration: '5m',
+      exec: 'apiImport',
     }
   },
 };
@@ -38,8 +45,9 @@ let orderCounter = new Counter('orders');
 
 export function setup() {
   const customerEmail = accountRegister();
+  const token = fetchBearerToken();
 
-  return { customerEmail };
+  return { customerEmail, token };
 }
 
 export function browseOnly() {
@@ -52,23 +60,23 @@ export function browseOnly() {
 }
 
 export function browseAndBuy() {
-    visitStorefront();
+  visitStorefront();
+  visitNavigationPage();
+
+  // // 10% of the time, register an account
+  // between(1, 10) <= 1 ? accountRegister() : guestRegister();
+
+  guestRegister();
+  let cartItems = between(1, 10);
+  for (let i = 0; i < cartItems + 1; i++) {
     visitNavigationPage();
+    visitProductDetailPage()
+    addProductToCart(visitProductDetailPage().id);
+  }
 
-    // // 10% of the time, register an account
-    // between(1, 10) <= 1 ? accountRegister() : guestRegister();
-
-    guestRegister();
-    let cartItems = between(1, 10);
-    for (let i = 0; i < cartItems + 1; i++) {
-      visitNavigationPage();
-      visitProductDetailPage()
-      addProductToCart(visitProductDetailPage().id);
-    }
-
-    visitCartPage();
-    visitConfirmPage();
-    placeOrder(orderCounter);
+  visitCartPage();
+  visitConfirmPage();
+  placeOrder(orderCounter);
 }
 
 export function loggedInFastBuy(data) {
@@ -77,4 +85,11 @@ export function loggedInFastBuy(data) {
   visitCartPage();
   visitConfirmPage();
   placeOrder(orderCounter);
+}
+
+export function apiImport(data) {
+  useCredentials(data.token);
+  productImport(20);
+  productChangePrice(20);
+  productChangeStocks(20);
 }

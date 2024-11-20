@@ -90,6 +90,7 @@ export function productImport(count = 20) {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${credentials.access_token}`,
+      'indexing-behavior': 'use-queue-indexing',
     },
     tags: {
       name: 'api.product.import',
@@ -124,6 +125,7 @@ export function productChangeStocks(count = 20) {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${credentials.access_token}`,
+      'indexing-behavior': 'use-queue-indexing',
     },
     tags: {
       name: 'api.product.stock_update',
@@ -165,6 +167,7 @@ export function productChangePrice(count = 20) {
     headers: {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${credentials.access_token}`,
+      'indexing-behavior': 'use-queue-indexing',
     },
     tags: {
       name: 'api.product.price_update',
