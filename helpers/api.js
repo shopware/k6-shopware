@@ -16,12 +16,14 @@ let credentials = {};
 /**
 * @returns {{access_token: string, expires_in: number, token_type: string}}
 */
-export function fetchBearerToken() {
+export function fetchBearerToken(trend) {
+  let stepStart = Date.now();
   const resp = http.post(`${salesChannel[0].api.baseURL}/oauth/token`, JSON.stringify(salesChannel[0].api.credentials), {
     headers: {
       'Content-Type': 'application/json',
     },
   });
+  trend.add(Date.now() - stepStart);
 
   return resp.json();
 }
@@ -36,7 +38,7 @@ export function useCredentials(creds) {
 /**
 * @param {number} count
 */
-export function productImport(count = 20) {
+export function productImport(trend, count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
@@ -86,6 +88,7 @@ export function productImport(count = 20) {
     }
   ];
 
+  let stepStart = Date.now();
   const resp = http.post(`${salesChannel[0].api.baseURL}/_action/sync`, JSON.stringify(payload), {
     headers: {
       'Content-Type': 'application/json',
@@ -96,13 +99,14 @@ export function productImport(count = 20) {
       name: 'api.product.import',
     },
   });
+  trend.add(Date.now() - stepStart);
 
   check(resp, {
     'Import products is successful': (r) => r.status === 200,
   });
 }
 
-export function productChangeStocks(count = 20) {
+export function productChangeStocks(trend, count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
@@ -121,6 +125,7 @@ export function productChangeStocks(count = 20) {
     }
   ];
 
+  let stepStart = Date.now();
   const resp = http.post(`${salesChannel[0].api.baseURL}/_action/sync`, JSON.stringify(payload), {
     headers: {
       'Content-Type': 'application/json',
@@ -131,13 +136,14 @@ export function productChangeStocks(count = 20) {
       name: 'api.product.stock_update',
     },
   });
+  trend.add(Date.now() - stepStart);
 
   check(resp, {
     'Product stock update is successful': (r) => r.status === 200,
   });
 }
 
-export function productChangePrice(count = 20) {
+export function productChangePrice(trend, count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
@@ -163,6 +169,7 @@ export function productChangePrice(count = 20) {
     }
   ];
 
+  let stepStart = Date.now();
   const resp = http.post(`${salesChannel[0].api.baseURL}/_action/sync`, JSON.stringify(payload), {
     headers: {
       'Content-Type': 'application/json',
@@ -173,6 +180,7 @@ export function productChangePrice(count = 20) {
       name: 'api.product.price_update',
     },
   });
+  trend.add(Date.now() - stepStart);
 
   check(resp, {
     'Product price update is successful': (r) => r.status === 200,

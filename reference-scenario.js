@@ -11,6 +11,7 @@ import {
 import { productChangePrice, fetchBearerToken, productImport, productChangeStocks, useCredentials } from "./helpers/api.js";
 import { between } from "./helpers/util.js";
 import { Counter } from 'k6/metrics';
+import { Trend } from 'k6/metrics';
 
 export const options = {
   scenarios: {
@@ -42,54 +43,71 @@ export const options = {
 };
 
 let orderCounter = new Counter('orders');
+let StoreFrontRT = new Trend('response_time_StoreFront');
+let SearchPageRT = new Trend('response_time_SearchPage');
+let NavigationPageRT = new Trend('response_time_NavigationPage');
+let ProductDetailPageRT = new Trend('response_time_ProductDetailPage');
+let guestRegisterPageRT = new Trend('response_time_guestRegister');
+let CartPageRT = new Trend('response_time_CartPage');
+let ConfirmPageRT = new Trend('response_time_ConfirmPage');
+let placeOrderRT = new Trend('response_time_placeOrder');
+let accountRegisterRT = new Trend('response_time_accountRegister');
+let accountLoginRT = new Trend('response_time_accountLogin');
+let accountDashboardRT = new Trend('response_time_accountDashboard');
+let addProductToCartRT = new Trend('response_time_addProductToCart');
+let CartInfoRT = new Trend('response_time_CartInfo');
+let fetchBearerTokenRT = new Trend('response_time_fetchBearerToken');
+let APIProductImportRT = new Trend('response_time_API_ProductImport');
+let APIproductChangePrice = new Trend('response_time_API_productChangePrice');
+let APIproductChangeStocks = new Trend('response_time_API_productChangeStocks');
 
 export function setup() {
-  const customerEmail = accountRegister();
-  const token = fetchBearerToken();
+  const customerEmail = accountRegister(accountRegisterRT);
+  const token = fetchBearerToken(fetchBearerTokenRT);
 
   return { customerEmail, token };
 }
 
 export function browseOnly() {
-  visitStorefront();
-  visitSearchPage();
-  visitNavigationPage();
-  visitProductDetailPage();
-  visitNavigationPage();
-  visitProductDetailPage();
+  visitStorefront(StoreFrontRT);
+  visitSearchPage(SearchPageRT);
+  visitNavigationPage(NavigationPageRT);
+  visitProductDetailPage(ProductDetailPageRT);
+  visitNavigationPage(NavigationPageRT);
+  visitProductDetailPage(ProductDetailPageRT);
 }
 
 export function browseAndBuy() {
-  visitStorefront();
-  visitNavigationPage();
+  visitStorefront(StoreFrontRT);
+  visitNavigationPage(NavigationPageRT);
 
   // // 10% of the time, register an account
   // between(1, 10) <= 1 ? accountRegister() : guestRegister();
 
-  guestRegister();
+  guestRegister(guestRegisterPageRT);
   let cartItems = between(1, 10);
   for (let i = 0; i < cartItems + 1; i++) {
-    visitNavigationPage();
-    visitProductDetailPage()
-    addProductToCart(visitProductDetailPage().id);
+    visitNavigationPage(NavigationPageRT);
+    visitProductDetailPage(ProductDetailPageRT)
+    addProductToCart(addProductToCartRT, CartInfoRT, visitProductDetailPage(ProductDetailPageRT).id);
   }
 
-  visitCartPage();
-  visitConfirmPage();
-  placeOrder(orderCounter);
+  visitCartPage(CartPageRT);
+  visitConfirmPage(ConfirmPageRT);
+  placeOrder(orderCounter, placeOrderRT);
 }
 
 export function loggedInFastBuy(data) {
-  accountLogin(data.customerEmail);
-  addProductToCart(visitProductDetailPage().id);
-  visitCartPage();
-  visitConfirmPage();
-  placeOrder(orderCounter);
+  accountLogin(accountLoginRT, accountDashboardRT, data.customerEmail);
+  addProductToCart(addProductToCartRT, CartInfoRT, visitProductDetailPage(ProductDetailPageRT).id);
+  visitCartPage(CartPageRT);
+  visitConfirmPage(ConfirmPageRT);
+  placeOrder(orderCounter, placeOrderRT);
 }
 
 export function apiImport(data) {
   useCredentials(data.token);
-  productImport(20);
-  productChangePrice(20);
-  productChangeStocks(20);
+  productImport(APIProductImportRT, 20);
+  productChangePrice(APIproductChangePrice, 20);
+  productChangeStocks(APIproductChangeStocks, 20);
 }

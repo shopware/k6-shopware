@@ -8,6 +8,8 @@ import {
   visitSearchPage,
   visitStorefront,
 } from "./helpers/storefront.js";
+import { Counter } from 'k6/metrics';
+import { Trend } from 'k6/metrics';
 
 export const options = {
   scenarios: {
@@ -32,28 +34,47 @@ export const options = {
   },
 };
 
+let orderCounter = new Counter('orders');
+let StoreFrontRT = new Trend('response_time_StoreFront');
+let SearchPageRT = new Trend('response_time_SearchPage');
+let NavigationPageRT = new Trend('response_time_NavigationPage');
+let ProductDetailPageRT = new Trend('response_time_ProductDetailPage');
+let guestRegisterPageRT = new Trend('response_time_guestRegister');
+let CartPageRT = new Trend('response_time_CartPage');
+let ConfirmPageRT = new Trend('response_time_ConfirmPage');
+let placeOrderRT = new Trend('response_time_placeOrder');
+let accountRegisterRT = new Trend('response_time_accountRegister');
+let accountLoginRT = new Trend('response_time_accountLogin');
+let accountDashboardRT = new Trend('response_time_accountDashboard');
+let addProductToCartRT = new Trend('response_time_addProductToCart');
+let CartInfoRT = new Trend('response_time_CartInfo');
+let fetchBearerTokenRT = new Trend('response_time_fetchBearerToken');
+let APIProductImportRT = new Trend('response_time_API_ProductImport');
+let APIproductChangePrice = new Trend('response_time_API_productChangePrice');
+let APIproductChangeStocks = new Trend('response_time_API_productChangeStocks');
+
 export function browseOnly() {
-  visitStorefront();
-  visitSearchPage();
-  visitNavigationPage();
-  visitProductDetailPage();
+  visitStorefront(StoreFrontRT);
+  visitSearchPage(SearchPageRT);
+  visitNavigationPage(NavigationPageRT);
+  visitProductDetailPage(ProductDetailPageRT);
 }
 
 export function fastBuy() {
-  addProductToCart(visitProductDetailPage().id);
-  accountRegister();
-  placeOrder();
+  addProductToCart(addProductToCartRT, CartInfoRT, visitProductDetailPage(ProductDetailPageRT).id);
+  accountRegister(accountRegisterRT);
+  placeOrder(orderCounter, placeOrderRT);
 }
 
 export function setup() {
-  const token = fetchBearerToken();
+  const token = fetchBearerToken(fetchBearerTokenRT);
 
   return { token };
 }
 
 export function importer(data) {
   useCredentials(data.token);
-  productImport();
-  productChangePrice();
-  productChangeStocks();
+  productImport(APIProductImportRT);
+  productChangePrice(APIproductChangePrice);
+  productChangeStocks(APIproductChangeStocks);
 }
