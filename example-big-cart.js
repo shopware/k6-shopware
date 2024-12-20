@@ -10,30 +10,38 @@ import {
 import { Counter } from 'k6/metrics';
 import { Trend } from 'k6/metrics';
 
-let orderCounter = new Counter('orders');
 let StoreFrontRT = new Trend('response_time_StoreFront');
-let SearchPageRT = new Trend('response_time_SearchPage');
-let NavigationPageRT = new Trend('response_time_NavigationPage');
+let StoreFrontCounter = new Counter('counter_StoreFront');
+
 let ProductDetailPageRT = new Trend('response_time_ProductDetailPage');
-let guestRegisterPageRT = new Trend('response_time_guestRegister');
+let ProductDetailCounter = new Counter('counter_ProductDetail');
+
 let CartPageRT = new Trend('response_time_CartPage');
+let CartPageCounter = new Counter('counter_CartPage');
+
 let ConfirmPageRT = new Trend('response_time_ConfirmPage');
+let ConfirmPageCounter = new Counter('counter_ConfirmPage');
+
 let placeOrderRT = new Trend('response_time_placeOrder');
+let orderCounter = new Counter('counter_orders');
+
 let accountRegisterRT = new Trend('response_time_accountRegister');
-let accountLoginRT = new Trend('response_time_accountLogin');
-let accountDashboardRT = new Trend('response_time_accountDashboard');
+let accountRegisterCounter = new Counter('counter_accountRegister');
+
 let addProductToCartRT = new Trend('response_time_addProductToCart');
+let addProductToCartCounter = new Counter('counter_addProductToCart');
+
 let CartInfoRT = new Trend('response_time_CartInfo');
-let fetchBearerTokenRT = new Trend('response_time_fetchBearerToken');
+let CartInfoCounter = new Counter('counter_CartInfo');
 
 export default function () {
-  visitStorefront(StoreFrontRT);
-  accountRegister(accountRegisterRT);
+  visitStorefront(StoreFrontRT, StoreFrontCounter);
+  accountRegister(accountRegisterRT, accountRegisterCounter);
   // add 10 products to cart
   for (let i = 0; i < 10; i++) {
-    addProductToCart(addProductToCartRT, CartInfoRT, visitProductDetailPage(ProductDetailPageRT).id);
+    addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
   }
-  visitCartPage(CartPageRT);
-  visitConfirmPage(ConfirmPageRT);
+  visitCartPage(CartPageRT, CartPageCounter);
+  visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
   placeOrder(orderCounter, placeOrderRT);
 }
