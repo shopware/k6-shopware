@@ -16,7 +16,7 @@ let credentials = {};
 /**
 * @returns {{access_token: string, expires_in: number, token_type: string}}
 */
-export function fetchBearerToken(trend) {
+export function fetchBearerToken(trend, counter) {
   let stepStart = Date.now();
   const resp = http.post(`${salesChannel[0].api.baseURL}/oauth/token`, JSON.stringify(salesChannel[0].api.credentials), {
     headers: {
@@ -24,6 +24,7 @@ export function fetchBearerToken(trend) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   return resp.json();
 }
@@ -38,7 +39,7 @@ export function useCredentials(creds) {
 /**
 * @param {number} count
 */
-export function productImport(trend, count = 20) {
+export function productImport(trend, counter, count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
@@ -100,13 +101,14 @@ export function productImport(trend, count = 20) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(resp, {
     'Import products is successful': (r) => r.status === 200,
   });
 }
 
-export function productChangeStocks(trend, count = 20) {
+export function productChangeStocks(trend, counter, count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
@@ -137,13 +139,14 @@ export function productChangeStocks(trend, count = 20) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(resp, {
     'Product stock update is successful': (r) => r.status === 200,
   });
 }
 
-export function productChangePrice(trend, count = 20) {
+export function productChangePrice(trend, counter, count = 20) {
   const products = [];
 
   for (let i = 0; i < count; i++) {
@@ -181,6 +184,7 @@ export function productChangePrice(trend, count = 20) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(resp, {
     'Product price update is successful': (r) => r.status === 200,
