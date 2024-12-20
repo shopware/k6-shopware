@@ -18,7 +18,7 @@ export const options = {
   scenarios: {
     browse_only: {
       executor: 'constant-vus',
-      vus: 1,
+      vus: 45,
       duration: '5m',
       exec: 'browseOnly',
     },
