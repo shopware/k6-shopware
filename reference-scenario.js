@@ -12,6 +12,7 @@ import { productChangePrice, fetchBearerToken, productImport, productChangeStock
 import { between } from "./helpers/util.js";
 import { Counter } from 'k6/metrics';
 import { Trend } from 'k6/metrics';
+import { sleep } from 'k6';
 
 export const options = {
   scenarios: {
@@ -70,16 +71,23 @@ export function setup() {
 
 export function browseOnly() {
   visitStorefront(StoreFrontRT);
+  sleep(5);
   visitSearchPage(SearchPageRT);
+  sleep(5);
   visitNavigationPage(NavigationPageRT);
+  sleep(5);
   visitProductDetailPage(ProductDetailPageRT);
+  sleep(5);
   visitNavigationPage(NavigationPageRT);
+  sleep(5);
   visitProductDetailPage(ProductDetailPageRT);
 }
 
 export function browseAndBuy() {
   visitStorefront(StoreFrontRT);
+  sleep(5);
   visitNavigationPage(NavigationPageRT);
+  sleep(5);
 
   // // 10% of the time, register an account
   // between(1, 10) <= 1 ? accountRegister() : guestRegister();
@@ -88,20 +96,28 @@ export function browseAndBuy() {
   let cartItems = between(1, 10);
   for (let i = 0; i < cartItems + 1; i++) {
     visitNavigationPage(NavigationPageRT);
+    sleep(15);
     visitProductDetailPage(ProductDetailPageRT)
+    sleep(15);
     addProductToCart(addProductToCartRT, CartInfoRT, visitProductDetailPage(ProductDetailPageRT).id);
   }
 
   visitCartPage(CartPageRT);
+  sleep(15);
   visitConfirmPage(ConfirmPageRT);
+  sleep(30);
   placeOrder(orderCounter, placeOrderRT);
 }
 
 export function loggedInFastBuy(data) {
   accountLogin(accountLoginRT, accountDashboardRT, data.customerEmail);
+  sleep(15);
   addProductToCart(addProductToCartRT, CartInfoRT, visitProductDetailPage(ProductDetailPageRT).id);
+  sleep(15);
   visitCartPage(CartPageRT);
+  sleep(15);
   visitConfirmPage(ConfirmPageRT);
+  sleep(30);
   placeOrder(orderCounter, placeOrderRT);
 }
 
