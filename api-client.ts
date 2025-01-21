@@ -26,15 +26,16 @@ export class ApiClient {
   }
 
   /**
-   * Permform a POST request
+   * Perform a POST request with optional Accept header customization
    */
   async post<ResponseType>(
     url: string,
     json: object = {},
     headers: Record<string, string> = {},
+    acceptAll: boolean = false  // 👈 Optional flag to control Accept header
   ): Promise<HttpClientResponse<ResponseType>> {
     headers["content-type"] = "application/json";
-    headers.accept = "application/json";
+    headers["accept"] = acceptAll ? "*/*" : "application/json"; // 👈 Choose Accept header dynamically
 
     return await this.request("POST", url, JSON.stringify(json), headers);
   }

@@ -72,42 +72,56 @@ async function fetchSalesChannel() {
 const salesChannel = await fetchSalesChannel();
 
 async function fetchSeoUrls(name: string) {
-  const seoUrls = await apiClient.post<{ data: { seoPathInfo: string, foreignKey: string }[] }>('/search/seo-url', {
-    fields: ["seoPathInfo", "foreignKey"],
-    filter: [
-      {
-        type: "equals",
-        field: "routeName",
-        value: name,
-      },
-      {
-        type: "equals",
-        field: "isCanonical",
-        value: true,
-      },
-      {
-        type: "equals",
-        field: "isDeleted",
-        value: false,
-      },
-      {
-        type: "equals",
-        field: "salesChannelId",
-        value: salesChannel.id,
-      },
-    ],
-    limit: 500,
-  });
+  let page = 1;
+  let allData: { url: string; id: string }[] = [];
+  let hasMorePages = true;
 
-  let data = seoUrls.body.data.map((seoUrl) => {
-    return {
-      url: `${salesChannel.url}/${seoUrl.seoPathInfo}`,
-      id: seoUrl.foreignKey,
-    };
-  });
+  while (hasMorePages) {
+    const response = await apiClient.post<{ data: { attributes: { seoPathInfo: string; foreignKey: string; }; }[], links?: { next?: string } }>('/search/seo-url', {
+      fields: ["seoPathInfo", "foreignKey"],
+      filter: [
+        {
+          type: "equals",
+          field: "routeName",
+          value: name,
+        },
+        {
+          type: "equals",
+          field: "isCanonical",
+          value: true,
+        },
+        {
+          type: "equals",
+          field: "isDeleted",
+          value: false,
+        },
+        {
+          type: "equals",
+          field: "salesChannelId",
+          value: salesChannel.id,
+        },
+      ],
+      limit: 500, // Max limit per request
+      page: page, // Start from page 1
+    },{},true);
+
+    const currentPageData = response.body.data.map(seoUrl => ({
+      url: `${salesChannel.url}/${seoUrl.attributes.seoPathInfo}`,
+      id: seoUrl.attributes.foreignKey,
+    }));
+
+    allData = allData.concat(currentPageData);
+
+    // Check if there's a next page
+    if (response.body.links?.next) {
+      page++; // Move to the next page
+    } else {
+      hasMorePages = false; // Stop looping when no next page
+    }
+  }
 
   if (name === 'frontend.detail.page') {
-    const productIds = data.map((seoUrl) => seoUrl.id);
+    const productIds = allData.map((seoUrl) => seoUrl.id);
     
     if (productIds.length) {
       const filteredProductIds = await apiClient.post<{data: string[]}>('/search-ids/product', {
@@ -143,12 +157,12 @@ async function fetchSeoUrls(name: string) {
         ]
       }, {"sw-inheritance": "1"});
   
-      data = data.filter((seoUrl) => filteredProductIds.body.data.includes(seoUrl.id));
+      allData = allData.filter((seoUrl) => filteredProductIds.body.data.includes(seoUrl.id));
     }
   }
 
-  Bun.write(`fixtures/seo-${name}.json`, JSON.stringify(data));
-  console.log(`Collected ${data.length} seo urls for ${name}`);
+  Bun.write(`fixtures/seo-${name}.json`, JSON.stringify(allData));
+  console.log(`Collected ${allData.length} seo urls for ${name}`);
 }
 
 async function fetchMedia() {
