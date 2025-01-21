@@ -4,16 +4,18 @@ import { parseHTML } from "k6/html";
 import { getRandomItem, postFormData } from "./util.js";
 import { salesChannel, searchKeywords, seoListingPage, seoProductDetailPage } from './data.js';
 
-export function visitStorefront(trend) {
+export function visitStorefront(trend, counter) {
   let stepStart = Date.now();
   const r = http.get(salesChannel[0].url);
   trend.add(Date.now() - stepStart);
+  counter.add(1);
+
   check(r, {
     "Loaded Startpage": (r) => r.status === 200,
   });
 }
 
-export function accountRegister(trend) {
+export function accountRegister(trend, counter) {
   const randomString =
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
@@ -35,6 +37,7 @@ export function accountRegister(trend) {
     "billingAddress[countryId]": salesChannel[0].countryIds[0],
   }, "frontend.account.register");
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(register, {
     "Account has been created": (r) => r.status === 200,
@@ -44,7 +47,7 @@ export function accountRegister(trend) {
   return email;
 }
 
-export function guestRegister(trend) {
+export function guestRegister(trend, counter) {
   const randomString =
     Math.random().toString(36).substring(2, 15) +
     Math.random().toString(36).substring(2, 15);
@@ -67,6 +70,7 @@ export function guestRegister(trend) {
     "billingAddress[countryId]": salesChannel[0].countryIds[0],
   }, "frontend.account.register");
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(register, {
     "Guest account created": (r) => r.status === 200,
@@ -74,31 +78,34 @@ export function guestRegister(trend) {
   return email;
 }
 
-export function accountLogin(trend, trendAccountDashboard, email, password = "shopware") {
+export function accountLogin(trend, counter, trendAccountDashboard, counterAccountDashboard , email, password = "shopware") {
   let stepStart = Date.now();
   const login = postFormData(`${salesChannel[0].url}/account/login`, {
     username: email,
     password: password,
   }, "frontend.account.login");
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(login, {
     "Login successfull": (r) => r.status === 200,
   });
 
-  visitAccountDashboard(trendAccountDashboard);
+  visitAccountDashboard(trendAccountDashboard, counterAccountDashboard);
 }
 
-export function visitAccountDashboard(trend) {
+export function visitAccountDashboard(trend, counter) {
   let stepStart = Date.now();
   const accountPage = http.get(`${salesChannel[0].url}/account`);
   trend.add(Date.now() - stepStart);
+  counter.add(1);
+
   check(accountPage, {
     "Check user is really logged-in": (r) => r.body.includes("John Doe"),
   });
 }
 
-export function visitProductDetailPage(trend) {
+export function visitProductDetailPage(trend, counter) {
   const page = getRandomItem(seoProductDetailPage);
 
   let stepStart = Date.now();
@@ -108,6 +115,8 @@ export function visitProductDetailPage(trend) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
+
   check(productDetailPage, {
     "Check product detail page": (r) => r.status === 200 || r.status === 404,
   });
@@ -115,7 +124,7 @@ export function visitProductDetailPage(trend) {
   return page;
 }
 
-export function visitNavigationPage(trend) {
+export function visitNavigationPage(trend, counter) {
   const page = getRandomItem(seoListingPage);
 
   let stepStart = Date.now();
@@ -125,6 +134,7 @@ export function visitNavigationPage(trend) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(productDetailPage, {
     "Check navigation page": (r) => r.status === 200 || r.status === 404,
@@ -133,7 +143,7 @@ export function visitNavigationPage(trend) {
   return page;
 }
 
-export function getCartInfo(trend) {
+export function getCartInfo(trend, counter) {
   let stepStart = Date.now();
   const cartInfo = http.get(`${salesChannel[0].url}/widgets/checkout/info`, {
     tags: {
@@ -141,6 +151,8 @@ export function getCartInfo(trend) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
+
   check(cartInfo, {
     "Check cart info": (r) => r.status === 200 || r.status === 204,
   });
@@ -160,7 +172,7 @@ export function getCartInfo(trend) {
   };
 }
 
-export function addProductToCart(trend, trendCartInfo, productId) {
+export function addProductToCart(trend, counter, trendCartInfo, counterCartInfo, productId) {
   const data = {
     redirectTo: "frontend.checkout.cart.page",
   };
@@ -172,30 +184,32 @@ export function addProductToCart(trend, trendCartInfo, productId) {
   data[`lineItems[${productId}][stackable]`] = "1";
   data[`lineItems[${productId}][removable]`] = "1";
 
-  const before = getCartInfo(trendCartInfo);
+  const before = getCartInfo(trendCartInfo, counterCartInfo);
 
   let stepStart = Date.now();
   postFormData(`${salesChannel[0].url}/checkout/line-item/add`, data, "frontend.checkout.line-item.add");
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
-  const after = getCartInfo(trendCartInfo);
+  const after = getCartInfo(trendCartInfo, counterCartInfo);
 
   check(after, {
     "Item added to cart": (after) => after.total != before.total,
   });
 }
 
-export function visitCartPage(trend) {
+export function visitCartPage(trend, counter) {
   let stepStart = Date.now();
   const res = http.get(`${salesChannel[0].url}/checkout/cart`);
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(res, {
     "Cart page is loaded": (r) => r.status === 200,
   });
 }
 
-export function visitConfirmPage(trend) {
+export function visitConfirmPage(trend, counter) {
   let stepStart = Date.now();
   const res = http.get(`${salesChannel[0].url}/checkout/confirm`, {
     tags: {
@@ -203,13 +217,14 @@ export function visitConfirmPage(trend) {
     },
   });
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(res, {
     "Confirm page is loaded": (r) => r.status === 200,
   });
 }
 
-export function visitSearchPage(trend) {
+export function visitSearchPage(trend, counter) {
   const term = getRandomItem(searchKeywords);
 
   let stepStart = Date.now();
@@ -222,6 +237,7 @@ export function visitSearchPage(trend) {
     },
   );
   trend.add(Date.now() - stepStart);
+  counter.add(1);
 
   check(res, {
     "Search page is loaded": (r) => r.status === 200,
