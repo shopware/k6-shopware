@@ -103,6 +103,10 @@ export function productImport(trend, counter, count = 20) {
   trend.add(Date.now() - stepStart);
   counter.add(1);
 
+  if (resp.status === 400) {
+    console.log(`Product import failed: ${resp.body}`);
+  }
+
   check(resp, {
     'Import products is successful': (r) => r.status === 200,
   });
@@ -141,6 +145,10 @@ export function productChangeStocks(trend, counter, count = 20) {
   trend.add(Date.now() - stepStart);
   counter.add(1);
 
+  if (resp.status === 400) {
+    console.log(`Stock update failed: ${resp.body}`);
+  }
+
   check(resp, {
     'Product stock update is successful': (r) => r.status === 200,
   });
@@ -172,6 +180,8 @@ export function productChangePrice(trend, counter, count = 20) {
     }
   ];
 
+ 
+
   let stepStart = Date.now();
   const resp = http.post(`${salesChannel[0].api.baseURL}/_action/sync`, JSON.stringify(payload), {
     headers: {
@@ -185,6 +195,10 @@ export function productChangePrice(trend, counter, count = 20) {
   });
   trend.add(Date.now() - stepStart);
   counter.add(1);
+
+  if (resp.status === 400) {
+    console.log(`Price update failed: ${resp.body}`);
+  }
 
   check(resp, {
     'Product price update is successful': (r) => r.status === 200,
