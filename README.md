@@ -2,6 +2,9 @@
 
 This repository contains helpers and an example scenario to run K6 against a Shopware Shop.
 
+> [!NOTE]  
+> Headless use-cases are right now not implemented
+
 ## Requirements
 
 - Bun
