@@ -1,12 +1,12 @@
 import {
-  accountRegister,
-  addProductToCart,
-  placeOrder,
-  visitCartPage,
-  visitConfirmPage,
-  visitProductDetailPage,
-  visitStorefront,
-} from "./helpers/storefront.js";
+	accountRegister,
+	addProductToCart,
+	placeOrder,
+	visitCartPage,
+	visitConfirmPage,
+	visitProductDetailPage,
+	visitStorefront,
+} from './helpers/storefront.js';
 import { Counter } from 'k6/metrics';
 import { Trend } from 'k6/metrics';
 
@@ -35,10 +35,16 @@ let CartInfoRT = new Trend('response_time_CartInfo');
 let CartInfoCounter = new Counter('counter_CartInfo');
 
 export default function () {
-  visitStorefront(StoreFrontRT, StoreFrontCounter);
-  accountRegister(accountRegisterRT, accountRegisterCounter);
-  addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
-  visitCartPage(CartPageRT, CartPageCounter);
-  visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
-  placeOrder(orderCounter, placeOrderRT);
+	visitStorefront(StoreFrontRT, StoreFrontCounter);
+	accountRegister(accountRegisterRT, accountRegisterCounter);
+	addProductToCart(
+		addProductToCartRT,
+		addProductToCartCounter,
+		CartInfoRT,
+		CartInfoCounter,
+		visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id,
+	);
+	visitCartPage(CartPageRT, CartPageCounter);
+	visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
+	placeOrder(orderCounter, placeOrderRT);
 }

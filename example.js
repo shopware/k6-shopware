@@ -1,14 +1,14 @@
 import {
-  accountRegister,
-  addProductToCart,
-  placeOrder,
-  visitCartPage,
-  visitConfirmPage,
-  visitNavigationPage,
-  visitProductDetailPage,
-  visitSearchPage,
-  visitStorefront,
-} from "./helpers/storefront.js";
+	accountRegister,
+	addProductToCart,
+	placeOrder,
+	visitCartPage,
+	visitConfirmPage,
+	visitNavigationPage,
+	visitProductDetailPage,
+	visitSearchPage,
+	visitStorefront,
+} from './helpers/storefront.js';
 import { Counter } from 'k6/metrics';
 import { Trend } from 'k6/metrics';
 
@@ -43,21 +43,39 @@ let CartInfoRT = new Trend('response_time_CartInfo');
 let CartInfoCounter = new Counter('counter_CartInfo');
 
 export default function () {
-  visitStorefront(StoreFrontRT, StoreFrontCounter);
-  visitSearchPage(SearchPageRT, SearchPageCounter);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  accountRegister(accountRegisterRT, accountRegisterCounter);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
-  visitSearchPage(SearchPageRT, SearchPageCounter);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  visitSearchPage(SearchPageRT, SearchPageCounter);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
-  visitCartPage(CartPageRT, CartPageCounter);
-  visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
-  placeOrder(orderCounter, placeOrderRT);
+	visitStorefront(StoreFrontRT, StoreFrontCounter);
+	visitSearchPage(SearchPageRT, SearchPageCounter);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	accountRegister(accountRegisterRT, accountRegisterCounter);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	addProductToCart(
+		addProductToCartRT,
+		addProductToCartCounter,
+		CartInfoRT,
+		CartInfoCounter,
+		visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id,
+	);
+	visitSearchPage(SearchPageRT, SearchPageCounter);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	visitSearchPage(SearchPageRT, SearchPageCounter);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	addProductToCart(
+		addProductToCartRT,
+		addProductToCartCounter,
+		CartInfoRT,
+		CartInfoCounter,
+		visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id,
+	);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	addProductToCart(
+		addProductToCartRT,
+		addProductToCartCounter,
+		CartInfoRT,
+		CartInfoCounter,
+		visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id,
+	);
+	visitCartPage(CartPageRT, CartPageCounter);
+	visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
+	placeOrder(orderCounter, placeOrderRT);
 }

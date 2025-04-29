@@ -1,55 +1,70 @@
 import {
-  accountLogin,
-  accountRegister,
-  addProductToCart, guestRegister,
-  placeOrder, visitCartPage, visitConfirmPage,
-  visitNavigationPage,
-  visitProductDetailPage,
-  visitSearchPage,
-  visitStorefront,
-} from "./helpers/storefront.js";
-import { productChangePrice, fetchBearerToken, productImport, productChangeStocks, useCredentials } from "./helpers/api.js";
-import { between } from "./helpers/util.js";
+	accountLogin,
+	accountRegister,
+	addProductToCart,
+	guestRegister,
+	placeOrder,
+	visitCartPage,
+	visitConfirmPage,
+	visitNavigationPage,
+	visitProductDetailPage,
+	visitSearchPage,
+	visitStorefront,
+} from './helpers/storefront.js';
+import {
+	productChangePrice,
+	fetchBearerToken,
+	productImport,
+	productChangeStocks,
+	useCredentials,
+} from './helpers/api.js';
+import { between } from './helpers/util.js';
 import { Counter } from 'k6/metrics';
 import { Trend } from 'k6/metrics';
 import { sleep } from 'k6';
 
 export const options = {
-  cloud: {
-    distribution: {
-      distributionLabel1: { loadZone: 'amazon:de:frankfurt', percent: 20 },
-      distributionLabel2: { loadZone: 'amazon:fr:paris', percent: 20 },
-      distributionLabel3: { loadZone: 'amazon:se:stockholm', percent: 20 },
-      distributionLabel4: { loadZone: 'amazon:it:milan', percent: 20 },
-      distributionLabel5: { loadZone: 'amazon:gb:london', percent: 20 },
-    },
-  },
-  scenarios: {
-    browse_only: {
-      executor: 'constant-vus',
-      vus: 50,
-      duration: '5m',
-      exec: 'browseOnly',
-    },
-    browse_and_buy: {
-      executor: 'constant-vus',
-      vus: 1,
-      duration: '5m',
-      exec: 'browseAndBuy',
-    },
-    logged_in_fast_buy: {
-      executor: 'constant-vus',
-      vus: 1,
-      duration: '5m',
-      exec: 'loggedInFastBuy',
-    },
-    api_import: {
-      executor: 'constant-vus',
-      vus: 2,
-      duration: '5m',
-      exec: 'apiImport',
-    }
-  },
+	cloud: {
+		distribution: {
+			distributionLabel1: {
+				loadZone: 'amazon:de:frankfurt',
+				percent: 20,
+			},
+			distributionLabel2: { loadZone: 'amazon:fr:paris', percent: 20 },
+			distributionLabel3: {
+				loadZone: 'amazon:se:stockholm',
+				percent: 20,
+			},
+			distributionLabel4: { loadZone: 'amazon:it:milan', percent: 20 },
+			distributionLabel5: { loadZone: 'amazon:gb:london', percent: 20 },
+		},
+	},
+	scenarios: {
+		browse_only: {
+			executor: 'constant-vus',
+			vus: 50,
+			duration: '5m',
+			exec: 'browseOnly',
+		},
+		browse_and_buy: {
+			executor: 'constant-vus',
+			vus: 1,
+			duration: '5m',
+			exec: 'browseAndBuy',
+		},
+		logged_in_fast_buy: {
+			executor: 'constant-vus',
+			vus: 1,
+			duration: '5m',
+			exec: 'loggedInFastBuy',
+		},
+		api_import: {
+			executor: 'constant-vus',
+			vus: 2,
+			duration: '5m',
+			exec: 'apiImport',
+		},
+	},
 };
 
 const pause = 0.7;
@@ -102,91 +117,127 @@ let APIProductImportRT = new Trend('response_time_API_ProductImport');
 let APIProductImportCounter = new Counter('counter_API_ProductImport');
 
 let APIproductChangePriceRT = new Trend('response_time_API_productChangePrice');
-let APIproductChangePriceCounter = new Counter('counter_API_productChangePrice');
+let APIproductChangePriceCounter = new Counter(
+	'counter_API_productChangePrice',
+);
 
-let APIproductChangeStocksRT = new Trend('response_time_API_productChangeStocks');
-let APIproductChangeStocksCounter = new Counter('counter_API_productChangeStocks');
+let APIproductChangeStocksRT = new Trend(
+	'response_time_API_productChangeStocks',
+);
+let APIproductChangeStocksCounter = new Counter(
+	'counter_API_productChangeStocks',
+);
 
 let visitors_browseOnly = new Counter('visitors_browseOnly');
 let visitors_browseAndBuy = new Counter('visitors_browseAndBuy');
 let visitors_loggedInFastBuy = new Counter('visitors_loggedInFastBuy');
 
 export function setup() {
-  const customerEmail = accountRegister(accountRegisterRT, accountRegisterCounter);
-  const token = fetchBearerToken(fetchBearerTokenRT, fetchBearerTokenCounter);
+	const customerEmail = accountRegister(
+		accountRegisterRT,
+		accountRegisterCounter,
+	);
+	const token = fetchBearerToken(fetchBearerTokenRT, fetchBearerTokenCounter);
 
-  return { customerEmail, token };
+	return { customerEmail, token };
 }
 
 export function browseOnly() {
-  visitStorefront(StoreFrontRT, StoreFrontCounter);
-  sleep(pause);
-  visitSearchPage(SearchPageRT, SearchPageCounter);
-  sleep(pause);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  sleep(pause);
-  visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter);
-  sleep(pause);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  sleep(pause);
-  visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter);
-  sleep(pause);
+	visitStorefront(StoreFrontRT, StoreFrontCounter);
+	sleep(pause);
+	visitSearchPage(SearchPageRT, SearchPageCounter);
+	sleep(pause);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	sleep(pause);
+	visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter);
+	sleep(pause);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	sleep(pause);
+	visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter);
+	sleep(pause);
 
-  visitors_browseOnly.add(1);
+	visitors_browseOnly.add(1);
 }
 
 export function browseAndBuy() {
-  visitStorefront(StoreFrontRT, StoreFrontCounter);
-  sleep(pause);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  sleep(pause);
+	visitStorefront(StoreFrontRT, StoreFrontCounter);
+	sleep(pause);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	sleep(pause);
 
-  // // 10% of the time, register an account
-  // between(1, 10) <= 1 ? accountRegister() : guestRegister();
+	// // 10% of the time, register an account
+	// between(1, 10) <= 1 ? accountRegister() : guestRegister();
 
-  guestRegister(guestRegisterPageRT, guestRegisterPageCounter);
-  sleep(pause_buy);
-  let cartItems = between(1, 10);
-  for (let i = 0; i < cartItems + 1; i++) {
-    visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-    sleep(pause);
-    visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter)
-    sleep(pause);
-    addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
-    sleep(pause);
-  }
+	guestRegister(guestRegisterPageRT, guestRegisterPageCounter);
+	sleep(pause_buy);
+	let cartItems = between(1, 10);
+	for (let i = 0; i < cartItems + 1; i++) {
+		visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+		sleep(pause);
+		visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter);
+		sleep(pause);
+		addProductToCart(
+			addProductToCartRT,
+			addProductToCartCounter,
+			CartInfoRT,
+			CartInfoCounter,
+			visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter)
+				.id,
+		);
+		sleep(pause);
+	}
 
-  visitCartPage(CartPageRT, CartPageCounter);
-  sleep(pause_buy);
-  visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
-  sleep(pause_buy);
-  placeOrder(orderCounter, placeOrderRT);
-  sleep(pause_buy);
+	visitCartPage(CartPageRT, CartPageCounter);
+	sleep(pause_buy);
+	visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
+	sleep(pause_buy);
+	placeOrder(orderCounter, placeOrderRT);
+	sleep(pause_buy);
 
-  visitors_browseAndBuy.add(1);
+	visitors_browseAndBuy.add(1);
 }
 
 export function loggedInFastBuy(data) {
-  accountLogin(accountLoginRT, accountLoginCounter, accountDashboardRT, accountDashboardCounter, data.customerEmail);
-  sleep(pause_buy);
-  addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
-  sleep(pause_buy);
-  visitCartPage(CartPageRT, CartPageCounter);
-  sleep(pause_buy);
-  visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
-  sleep(pause_buy);
-  placeOrder(orderCounter, placeOrderRT);
-  sleep(pause_buy);
+	accountLogin(
+		accountLoginRT,
+		accountLoginCounter,
+		accountDashboardRT,
+		accountDashboardCounter,
+		data.customerEmail,
+	);
+	sleep(pause_buy);
+	addProductToCart(
+		addProductToCartRT,
+		addProductToCartCounter,
+		CartInfoRT,
+		CartInfoCounter,
+		visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id,
+	);
+	sleep(pause_buy);
+	visitCartPage(CartPageRT, CartPageCounter);
+	sleep(pause_buy);
+	visitConfirmPage(ConfirmPageRT, ConfirmPageCounter);
+	sleep(pause_buy);
+	placeOrder(orderCounter, placeOrderRT);
+	sleep(pause_buy);
 
-  visitors_loggedInFastBuy.add(1);
+	visitors_loggedInFastBuy.add(1);
 }
 
 export function apiImport(data) {
-  useCredentials(data.token);
-  productImport(APIProductImportRT, APIProductImportCounter, 20);
-  sleep(pause_api);
-  productChangePrice(APIproductChangePriceRT, APIproductChangePriceCounter, 20);
-  sleep(pause_api);
-  productChangeStocks(APIproductChangeStocksRT, APIproductChangeStocksCounter, 20);
-  sleep(pause_api);
+	useCredentials(data.token);
+	productImport(APIProductImportRT, APIProductImportCounter, 20);
+	sleep(pause_api);
+	productChangePrice(
+		APIproductChangePriceRT,
+		APIproductChangePriceCounter,
+		20,
+	);
+	sleep(pause_api);
+	productChangeStocks(
+		APIproductChangeStocksRT,
+		APIproductChangeStocksCounter,
+		20,
+	);
+	sleep(pause_api);
 }

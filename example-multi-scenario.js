@@ -1,37 +1,43 @@
-import { productChangePrice, productChangeStocks, fetchBearerToken, useCredentials, productImport } from "./helpers/api.js";
 import {
-  accountRegister,
-  addProductToCart,
-  placeOrder,
-  visitNavigationPage,
-  visitProductDetailPage,
-  visitSearchPage,
-  visitStorefront,
-} from "./helpers/storefront.js";
+	productChangePrice,
+	productChangeStocks,
+	fetchBearerToken,
+	useCredentials,
+	productImport,
+} from './helpers/api.js';
+import {
+	accountRegister,
+	addProductToCart,
+	placeOrder,
+	visitNavigationPage,
+	visitProductDetailPage,
+	visitSearchPage,
+	visitStorefront,
+} from './helpers/storefront.js';
 import { Counter } from 'k6/metrics';
 import { Trend } from 'k6/metrics';
 
 export const options = {
-  scenarios: {
-    browse_only: {
-      executor: 'constant-vus',
-      vus: 10,
-      duration: '30s',
-      exec: 'browseOnly',
-    },
-    fast_buy: {
-      executor: 'constant-vus',
-      vus: 1,
-      duration: '30s',
-      exec: 'fastBuy',
-    },
-    import: {
-      executor: 'constant-vus',
-      vus: 1,
-      duration: '30s',
-      exec: 'importer',
-    }
-  },
+	scenarios: {
+		browse_only: {
+			executor: 'constant-vus',
+			vus: 10,
+			duration: '30s',
+			exec: 'browseOnly',
+		},
+		fast_buy: {
+			executor: 'constant-vus',
+			vus: 1,
+			duration: '30s',
+			exec: 'fastBuy',
+		},
+		import: {
+			executor: 'constant-vus',
+			vus: 1,
+			duration: '30s',
+			exec: 'importer',
+		},
+	},
 };
 
 let StoreFrontRT = new Trend('response_time_StoreFront');
@@ -65,33 +71,48 @@ let APIProductImportRT = new Trend('response_time_API_ProductImport');
 let APIProductImportCounter = new Counter('counter_API_ProductImport');
 
 let APIproductChangePriceRT = new Trend('response_time_API_productChangePrice');
-let APIproductChangePriceCounter = new Counter('counter_API_productChangePrice');
+let APIproductChangePriceCounter = new Counter(
+	'counter_API_productChangePrice',
+);
 
-let APIproductChangeStocksRT = new Trend('response_time_API_productChangeStocks');
-let APIproductChangeStocksCounter = new Counter('counter_API_productChangeStocks');
+let APIproductChangeStocksRT = new Trend(
+	'response_time_API_productChangeStocks',
+);
+let APIproductChangeStocksCounter = new Counter(
+	'counter_API_productChangeStocks',
+);
 
 export function browseOnly() {
-  visitStorefront(StoreFrontRT, StoreFrontCounter);
-  visitSearchPage(SearchPageRT, SearchPageCounter);
-  visitNavigationPage(NavigationPageRT, NavigationPageCounter);
-  visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter);
+	visitStorefront(StoreFrontRT, StoreFrontCounter);
+	visitSearchPage(SearchPageRT, SearchPageCounter);
+	visitNavigationPage(NavigationPageRT, NavigationPageCounter);
+	visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter);
 }
 
 export function fastBuy() {
-  addProductToCart(addProductToCartRT, addProductToCartCounter, CartInfoRT, CartInfoCounter, visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id);
-  accountRegister(accountRegisterRT, accountRegisterCounter);
-  placeOrder(orderCounter, placeOrderRT);
+	addProductToCart(
+		addProductToCartRT,
+		addProductToCartCounter,
+		CartInfoRT,
+		CartInfoCounter,
+		visitProductDetailPage(ProductDetailPageRT, ProductDetailCounter).id,
+	);
+	accountRegister(accountRegisterRT, accountRegisterCounter);
+	placeOrder(orderCounter, placeOrderRT);
 }
 
 export function setup() {
-  const token = fetchBearerToken(fetchBearerTokenRT, fetchBearerTokenCounter);
+	const token = fetchBearerToken(fetchBearerTokenRT, fetchBearerTokenCounter);
 
-  return { token };
+	return { token };
 }
 
 export function importer(data) {
-  useCredentials(data.token);
-  productImport(APIProductImportRT, APIProductImportCounter);
-  productChangePrice(APIproductChangePriceRT, APIproductChangePriceCounter);
-  productChangeStocks(APIproductChangeStocksRT, APIproductChangeStocksCounter);
+	useCredentials(data.token);
+	productImport(APIProductImportRT, APIProductImportCounter);
+	productChangePrice(APIproductChangePriceRT, APIproductChangePriceCounter);
+	productChangeStocks(
+		APIproductChangeStocksRT,
+		APIproductChangeStocksCounter,
+	);
 }
