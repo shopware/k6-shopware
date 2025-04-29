@@ -1,3 +1,13 @@
+import { sleep } from 'k6';
+import { Counter } from 'k6/metrics';
+import { Trend } from 'k6/metrics';
+import {
+	fetchBearerToken,
+	productChangePrice,
+	productChangeStocks,
+	productImport,
+	useCredentials,
+} from './helpers/api.js';
 import {
 	accountLogin,
 	accountRegister,
@@ -11,17 +21,7 @@ import {
 	visitSearchPage,
 	visitStorefront,
 } from './helpers/storefront.js';
-import {
-	productChangePrice,
-	fetchBearerToken,
-	productImport,
-	productChangeStocks,
-	useCredentials,
-} from './helpers/api.js';
 import { between } from './helpers/util.js';
-import { Counter } from 'k6/metrics';
-import { Trend } from 'k6/metrics';
-import { sleep } from 'k6';
 
 export const options = {
 	cloud: {
@@ -71,66 +71,68 @@ const pause = 0.7;
 const pause_buy = 1.3;
 const pause_api = 0.05;
 
-let StoreFrontRT = new Trend('response_time_StoreFront');
-let StoreFrontCounter = new Counter('counter_StoreFront');
+const StoreFrontRT = new Trend('response_time_StoreFront');
+const StoreFrontCounter = new Counter('counter_StoreFront');
 
-let SearchPageRT = new Trend('response_time_SearchPage');
-let SearchPageCounter = new Counter('counter_SearchPage');
+const SearchPageRT = new Trend('response_time_SearchPage');
+const SearchPageCounter = new Counter('counter_SearchPage');
 
-let NavigationPageRT = new Trend('response_time_NavigationPage');
-let NavigationPageCounter = new Counter('counter_NavigationPage');
+const NavigationPageRT = new Trend('response_time_NavigationPage');
+const NavigationPageCounter = new Counter('counter_NavigationPage');
 
-let ProductDetailPageRT = new Trend('response_time_ProductDetailPage');
-let ProductDetailCounter = new Counter('counter_ProductDetail');
+const ProductDetailPageRT = new Trend('response_time_ProductDetailPage');
+const ProductDetailCounter = new Counter('counter_ProductDetail');
 
-let guestRegisterPageRT = new Trend('response_time_guestRegister');
-let guestRegisterPageCounter = new Counter('counter_guestRegisterPage');
+const guestRegisterPageRT = new Trend('response_time_guestRegister');
+const guestRegisterPageCounter = new Counter('counter_guestRegisterPage');
 
-let CartPageRT = new Trend('response_time_CartPage');
-let CartPageCounter = new Counter('counter_CartPage');
+const CartPageRT = new Trend('response_time_CartPage');
+const CartPageCounter = new Counter('counter_CartPage');
 
-let ConfirmPageRT = new Trend('response_time_ConfirmPage');
-let ConfirmPageCounter = new Counter('counter_ConfirmPage');
+const ConfirmPageRT = new Trend('response_time_ConfirmPage');
+const ConfirmPageCounter = new Counter('counter_ConfirmPage');
 
-let placeOrderRT = new Trend('response_time_placeOrder');
-let orderCounter = new Counter('counter_orders');
+const placeOrderRT = new Trend('response_time_placeOrder');
+const orderCounter = new Counter('counter_orders');
 
-let accountRegisterRT = new Trend('response_time_accountRegister');
-let accountRegisterCounter = new Counter('counter_accountRegister');
+const accountRegisterRT = new Trend('response_time_accountRegister');
+const accountRegisterCounter = new Counter('counter_accountRegister');
 
-let accountLoginRT = new Trend('response_time_accountLogin');
-let accountLoginCounter = new Counter('counter_accountLogin');
+const accountLoginRT = new Trend('response_time_accountLogin');
+const accountLoginCounter = new Counter('counter_accountLogin');
 
-let accountDashboardRT = new Trend('response_time_accountDashboard');
-let accountDashboardCounter = new Counter('counter_accountDashboard');
+const accountDashboardRT = new Trend('response_time_accountDashboard');
+const accountDashboardCounter = new Counter('counter_accountDashboard');
 
-let addProductToCartRT = new Trend('response_time_addProductToCart');
-let addProductToCartCounter = new Counter('counter_addProductToCart');
+const addProductToCartRT = new Trend('response_time_addProductToCart');
+const addProductToCartCounter = new Counter('counter_addProductToCart');
 
-let CartInfoRT = new Trend('response_time_CartInfo');
-let CartInfoCounter = new Counter('counter_CartInfo');
+const CartInfoRT = new Trend('response_time_CartInfo');
+const CartInfoCounter = new Counter('counter_CartInfo');
 
-let fetchBearerTokenRT = new Trend('response_time_fetchBearerToken');
-let fetchBearerTokenCounter = new Counter('counter_fetchBearerToken');
+const fetchBearerTokenRT = new Trend('response_time_fetchBearerToken');
+const fetchBearerTokenCounter = new Counter('counter_fetchBearerToken');
 
-let APIProductImportRT = new Trend('response_time_API_ProductImport');
-let APIProductImportCounter = new Counter('counter_API_ProductImport');
+const APIProductImportRT = new Trend('response_time_API_ProductImport');
+const APIProductImportCounter = new Counter('counter_API_ProductImport');
 
-let APIproductChangePriceRT = new Trend('response_time_API_productChangePrice');
-let APIproductChangePriceCounter = new Counter(
+const APIproductChangePriceRT = new Trend(
+	'response_time_API_productChangePrice',
+);
+const APIproductChangePriceCounter = new Counter(
 	'counter_API_productChangePrice',
 );
 
-let APIproductChangeStocksRT = new Trend(
+const APIproductChangeStocksRT = new Trend(
 	'response_time_API_productChangeStocks',
 );
-let APIproductChangeStocksCounter = new Counter(
+const APIproductChangeStocksCounter = new Counter(
 	'counter_API_productChangeStocks',
 );
 
-let visitors_browseOnly = new Counter('visitors_browseOnly');
-let visitors_browseAndBuy = new Counter('visitors_browseAndBuy');
-let visitors_loggedInFastBuy = new Counter('visitors_loggedInFastBuy');
+const visitors_browseOnly = new Counter('visitors_browseOnly');
+const visitors_browseAndBuy = new Counter('visitors_browseAndBuy');
+const visitors_loggedInFastBuy = new Counter('visitors_loggedInFastBuy');
 
 export function setup() {
 	const customerEmail = accountRegister(
@@ -170,7 +172,7 @@ export function browseAndBuy() {
 
 	guestRegister(guestRegisterPageRT, guestRegisterPageCounter);
 	sleep(pause_buy);
-	let cartItems = between(1, 10);
+	const cartItems = between(1, 10);
 	for (let i = 0; i < cartItems + 1; i++) {
 		visitNavigationPage(NavigationPageRT, NavigationPageCounter);
 		sleep(pause);

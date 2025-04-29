@@ -1,16 +1,16 @@
 import { check } from 'k6';
-import http from 'k6/http';
 import { parseHTML } from 'k6/html';
-import { getRandomItem, postFormData } from './util.js';
+import http from 'k6/http';
 import {
 	salesChannel,
 	searchKeywords,
 	seoListingPage,
 	seoProductDetailPage,
 } from './data.js';
+import { getRandomItem, postFormData } from './util.js';
 
 export function visitStorefront(trend, counter) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const r = http.get(salesChannel[0].url);
 	trend.add(Date.now() - stepStart);
 	counter.add(1);
@@ -27,7 +27,7 @@ export function accountRegister(trend, counter) {
 
 	const email = `${randomString}@test.de`;
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const register = postFormData(
 		`${salesChannel[0].url}/account/register`,
 		{
@@ -64,7 +64,7 @@ export function guestRegister(trend, counter) {
 	const email = `${randomString}@test.de`;
 
 	// guest "registration" with `guest: true`
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const register = postFormData(
 		`${salesChannel[0].url}/account/register`,
 		{
@@ -99,7 +99,7 @@ export function accountLogin(
 	email,
 	password = 'shopware',
 ) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const login = postFormData(
 		`${salesChannel[0].url}/account/login`,
 		{
@@ -119,7 +119,7 @@ export function accountLogin(
 }
 
 export function visitAccountDashboard(trend, counter) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const accountPage = http.get(`${salesChannel[0].url}/account`);
 	trend.add(Date.now() - stepStart);
 	counter.add(1);
@@ -132,7 +132,7 @@ export function visitAccountDashboard(trend, counter) {
 export function visitProductDetailPage(trend, counter) {
 	const page = getRandomItem(seoProductDetailPage);
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const productDetailPage = http.get(page.url, {
 		tags: {
 			name: 'frontend.detail.page',
@@ -152,7 +152,7 @@ export function visitProductDetailPage(trend, counter) {
 export function visitNavigationPage(trend, counter) {
 	const page = getRandomItem(seoListingPage);
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const productDetailPage = http.get(page.url, {
 		tags: {
 			name: 'frontend.navigation.page',
@@ -169,7 +169,7 @@ export function visitNavigationPage(trend, counter) {
 }
 
 export function getCartInfo(trend, counter) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const cartInfo = http.get(`${salesChannel[0].url}/widgets/checkout/info`, {
 		tags: {
 			name: 'frontend.cart.widget',
@@ -217,7 +217,7 @@ export function addProductToCart(
 
 	const before = getCartInfo(trendCartInfo, counterCartInfo);
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	postFormData(
 		`${salesChannel[0].url}/checkout/line-item/add`,
 		data,
@@ -234,7 +234,7 @@ export function addProductToCart(
 }
 
 export function visitCartPage(trend, counter) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const res = http.get(`${salesChannel[0].url}/checkout/cart`);
 	trend.add(Date.now() - stepStart);
 	counter.add(1);
@@ -245,7 +245,7 @@ export function visitCartPage(trend, counter) {
 }
 
 export function visitConfirmPage(trend, counter) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const res = http.get(`${salesChannel[0].url}/checkout/confirm`, {
 		tags: {
 			name: 'frontend.checkout.confirm.page',
@@ -262,7 +262,7 @@ export function visitConfirmPage(trend, counter) {
 export function visitSearchPage(trend, counter) {
 	const term = getRandomItem(searchKeywords);
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const res = http.get(
 		`${salesChannel[0].url}/search?search=${encodeURIComponent(term)}`,
 		{
@@ -280,7 +280,7 @@ export function visitSearchPage(trend, counter) {
 }
 
 export function placeOrder(orderCounter, trend) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const res = postFormData(
 		`${salesChannel[0].url}/checkout/order`,
 		{

@@ -1,5 +1,5 @@
-import { FormData } from '../lib/form-data.js';
 import http from 'k6/http';
+import { FormData } from '../lib/form-data.js';
 
 export function between(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
@@ -16,7 +16,7 @@ export function postFormData(url, data, tag) {
 		formData.append(key, data[key]);
 	}
 
-	let params = {
+	const params = {
 		headers: {
 			'Content-Type':
 				'multipart/form-data; boundary=' + formData.boundary,
@@ -27,7 +27,7 @@ export function postFormData(url, data, tag) {
 		redirects: 0, // Disable automatic redirects
 	};
 
-	let response = http.post(url, formData.body(), params);
+	const response = http.post(url, formData.body(), params);
 
 	// Check if the response is a redirect
 	if (response.status >= 300 && response.status < 400) {
@@ -42,7 +42,7 @@ export function postFormData(url, data, tag) {
 		}
 
 		// Make the GET request to the redirect URL
-		let redirectResponse = http.get(redirectUrl, {
+		const redirectResponse = http.get(redirectUrl, {
 			tags: {
 				name: tag + '_redirect',
 			},

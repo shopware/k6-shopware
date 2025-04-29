@@ -1,38 +1,38 @@
+import { Counter } from 'k6/metrics';
+import { Trend } from 'k6/metrics';
 import {
-	guestRegister,
 	addProductToCart,
+	guestRegister,
 	placeOrder,
 	visitCartPage,
 	visitConfirmPage,
 	visitProductDetailPage,
 	visitStorefront,
 } from './helpers/storefront.js';
-import { Counter } from 'k6/metrics';
-import { Trend } from 'k6/metrics';
 
-let StoreFrontRT = new Trend('response_time_StoreFront');
-let StoreFrontCounter = new Counter('counter_StoreFront');
+const StoreFrontRT = new Trend('response_time_StoreFront');
+const StoreFrontCounter = new Counter('counter_StoreFront');
 
-let ProductDetailPageRT = new Trend('response_time_ProductDetailPage');
-let ProductDetailCounter = new Counter('counter_ProductDetail');
+const ProductDetailPageRT = new Trend('response_time_ProductDetailPage');
+const ProductDetailCounter = new Counter('counter_ProductDetail');
 
-let guestRegisterPageRT = new Trend('response_time_guestRegister');
-let guestRegisterPageCounter = new Counter('counter_guestRegisterPage');
+const guestRegisterPageRT = new Trend('response_time_guestRegister');
+const guestRegisterPageCounter = new Counter('counter_guestRegisterPage');
 
-let CartPageRT = new Trend('response_time_CartPage');
-let CartPageCounter = new Counter('counter_CartPage');
+const CartPageRT = new Trend('response_time_CartPage');
+const CartPageCounter = new Counter('counter_CartPage');
 
-let ConfirmPageRT = new Trend('response_time_ConfirmPage');
-let ConfirmPageCounter = new Counter('counter_ConfirmPage');
+const ConfirmPageRT = new Trend('response_time_ConfirmPage');
+const ConfirmPageCounter = new Counter('counter_ConfirmPage');
 
-let placeOrderRT = new Trend('response_time_placeOrder');
-let orderCounter = new Counter('counter_orders');
+const placeOrderRT = new Trend('response_time_placeOrder');
+const orderCounter = new Counter('counter_orders');
 
-let addProductToCartRT = new Trend('response_time_addProductToCart');
-let addProductToCartCounter = new Counter('counter_addProductToCart');
+const addProductToCartRT = new Trend('response_time_addProductToCart');
+const addProductToCartCounter = new Counter('counter_addProductToCart');
 
-let CartInfoRT = new Trend('response_time_CartInfo');
-let CartInfoCounter = new Counter('counter_CartInfo');
+const CartInfoRT = new Trend('response_time_CartInfo');
+const CartInfoCounter = new Counter('counter_CartInfo');
 
 export default function () {
 	visitStorefront(StoreFrontRT, StoreFrontCounter);

@@ -1,16 +1,16 @@
-import { between, getRandomItem } from './util.js';
 import { check } from 'k6';
+import http from 'k6/http';
 import {
-	salesChannel,
-	seoProductDetailPage,
-	seoListingPage,
 	media,
 	propertyGroupOption,
+	salesChannel,
+	seoListingPage,
+	seoProductDetailPage,
 } from './data.js';
-import http from 'k6/http';
+import { between, getRandomItem } from './util.js';
 
 function uuidv4() {
-	return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+	return 'xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
 		const r = (Math.random() * 16) | 0;
 		const v = c === 'x' ? r : (r & 0x3) | 0x8;
 		return v.toString(16);
@@ -23,7 +23,7 @@ let credentials = {};
  * @returns {{access_token: string, expires_in: number, token_type: string}}
  */
 export function fetchBearerToken(trend, counter) {
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const resp = http.post(
 		`${salesChannel[0].api.baseURL}/oauth/token`,
 		JSON.stringify(salesChannel[0].api.credentials),
@@ -99,7 +99,7 @@ export function productImport(trend, counter, count = 20) {
 		},
 	];
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const resp = http.post(
 		`${salesChannel[0].api.baseURL}/_action/sync`,
 		JSON.stringify(payload),
@@ -145,7 +145,7 @@ export function productChangeStocks(trend, counter, count = 20) {
 		},
 	];
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const resp = http.post(
 		`${salesChannel[0].api.baseURL}/_action/sync`,
 		JSON.stringify(payload),
@@ -198,7 +198,7 @@ export function productChangePrice(trend, counter, count = 20) {
 		},
 	];
 
-	let stepStart = Date.now();
+	const stepStart = Date.now();
 	const resp = http.post(
 		`${salesChannel[0].api.baseURL}/_action/sync`,
 		JSON.stringify(payload),

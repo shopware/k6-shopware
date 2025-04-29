@@ -1,5 +1,5 @@
-import { CheerioCrawler, Dataset, log } from 'crawlee';
 import fs from 'fs';
+import { CheerioCrawler, Dataset, log } from 'crawlee';
 
 const crawler = new CheerioCrawler({
 	minConcurrency: 50,
