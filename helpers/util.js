@@ -9,6 +9,16 @@ export function getRandomItem(map) {
 	return map[between(0, map.length - 1)];
 }
 
+export function httpGet(url, params = {}) {
+	if (params.headers === undefined) {
+		params.headers = {};
+	}
+
+	params.headers["Accept-Encoding"] = "zstd, gzip";
+
+	return http.get(url, params);
+}
+
 export function postFormData(url, data, tag) {
 	const formData = new FormData();
 
@@ -19,6 +29,7 @@ export function postFormData(url, data, tag) {
 	const params = {
 		headers: {
 			'Content-Type': `multipart/form-data; boundary=${formData.boundary}`,
+			'Accept-Encoding': 'zstd, gzip',
 		},
 		tags: {
 			name: tag,
@@ -41,7 +52,7 @@ export function postFormData(url, data, tag) {
 		}
 
 		// Make the GET request to the redirect URL
-		const redirectResponse = http.get(redirectUrl, {
+		const redirectResponse = httpGet(redirectUrl, {
 			tags: {
 				name: `${tag}_redirect`,
 			},

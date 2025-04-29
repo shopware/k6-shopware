@@ -1,6 +1,5 @@
 import { check } from 'k6';
 import { parseHTML } from 'k6/html';
-import http from 'k6/http';
 import {
 	salesChannel,
 	searchKeywords,
@@ -11,7 +10,7 @@ import { getRandomItem, postFormData } from './util.js';
 
 export function visitStorefront(trend, counter) {
 	const stepStart = Date.now();
-	const r = http.get(salesChannel[0].url);
+	const r = httpGet(salesChannel[0].url);
 	trend.add(Date.now() - stepStart);
 	counter.add(1);
 
@@ -120,7 +119,7 @@ export function accountLogin(
 
 export function visitAccountDashboard(trend, counter) {
 	const stepStart = Date.now();
-	const accountPage = http.get(`${salesChannel[0].url}/account`);
+	const accountPage = httpGet(`${salesChannel[0].url}/account`);
 	trend.add(Date.now() - stepStart);
 	counter.add(1);
 
@@ -133,7 +132,7 @@ export function visitProductDetailPage(trend, counter) {
 	const page = getRandomItem(seoProductDetailPage);
 
 	const stepStart = Date.now();
-	const productDetailPage = http.get(page.url, {
+	const productDetailPage = httpGet(page.url, {
 		tags: {
 			name: 'frontend.detail.page',
 		},
@@ -153,7 +152,7 @@ export function visitNavigationPage(trend, counter) {
 	const page = getRandomItem(seoListingPage);
 
 	const stepStart = Date.now();
-	const productDetailPage = http.get(page.url, {
+	const productDetailPage = httpGet(page.url, {
 		tags: {
 			name: 'frontend.navigation.page',
 		},
@@ -170,7 +169,7 @@ export function visitNavigationPage(trend, counter) {
 
 export function getCartInfo(trend, counter) {
 	const stepStart = Date.now();
-	const cartInfo = http.get(`${salesChannel[0].url}/widgets/checkout/info`, {
+	const cartInfo = httpGet(`${salesChannel[0].url}/widgets/checkout/info`, {
 		tags: {
 			name: 'frontend.cart.widget',
 		},
@@ -235,7 +234,7 @@ export function addProductToCart(
 
 export function visitCartPage(trend, counter) {
 	const stepStart = Date.now();
-	const res = http.get(`${salesChannel[0].url}/checkout/cart`);
+	const res = httpGet(`${salesChannel[0].url}/checkout/cart`);
 	trend.add(Date.now() - stepStart);
 	counter.add(1);
 
@@ -246,7 +245,7 @@ export function visitCartPage(trend, counter) {
 
 export function visitConfirmPage(trend, counter) {
 	const stepStart = Date.now();
-	const res = http.get(`${salesChannel[0].url}/checkout/confirm`, {
+	const res = httpGet(`${salesChannel[0].url}/checkout/confirm`, {
 		tags: {
 			name: 'frontend.checkout.confirm.page',
 		},
@@ -263,7 +262,7 @@ export function visitSearchPage(trend, counter) {
 	const term = getRandomItem(searchKeywords);
 
 	const stepStart = Date.now();
-	const res = http.get(
+	const res = httpGet(
 		`${salesChannel[0].url}/search?search=${encodeURIComponent(term)}`,
 		{
 			tags: {
