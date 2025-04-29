@@ -14,7 +14,7 @@ export function httpGet(url, params = {}) {
 		params.headers = {};
 	}
 
-	params.headers["Accept-Encoding"] = "zstd, gzip";
+	params.headers['Accept-Encoding'] = 'zstd, gzip';
 
 	return http.get(url, params);
 }
