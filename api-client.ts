@@ -35,7 +35,7 @@ export class ApiClient {
 		acceptAll = false, // 👈 Optional flag to control Accept header
 	): Promise<HttpClientResponse<ResponseType>> {
 		headers['content-type'] = 'application/json';
-		headers['accept'] = acceptAll ? '*/*' : 'application/json'; // 👈 Choose Accept header dynamically
+		headers.accept = acceptAll ? '*/*' : 'application/json'; // 👈 Choose Accept header dynamically
 
 		return await this.request('POST', url, JSON.stringify(json), headers);
 	}

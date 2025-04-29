@@ -229,7 +229,7 @@ export function addProductToCart(
 	const after = getCartInfo(trendCartInfo, counterCartInfo);
 
 	check(after, {
-		'Item added to cart': (after) => after.total != before.total,
+		'Item added to cart': (after) => after.total !== before.total,
 	});
 }
 

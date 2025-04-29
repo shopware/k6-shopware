@@ -1,4 +1,4 @@
-import fs from 'fs';
+import fs from 'node:fs';
 import { CheerioCrawler, Dataset, log } from 'crawlee';
 
 const crawler = new CheerioCrawler({

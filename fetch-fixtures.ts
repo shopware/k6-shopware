@@ -200,7 +200,7 @@ async function fetchMedia() {
 		},
 	);
 
-	Bun.write(`fixtures/media.json`, JSON.stringify(mediaIds.body.data));
+	Bun.write('fixtures/media.json', JSON.stringify(mediaIds.body.data));
 	console.log(`Collected ${mediaIds.body.data.length} media ids`);
 }
 
@@ -213,7 +213,7 @@ async function fetchProperties() {
 	);
 
 	Bun.write(
-		`fixtures/property_group_option.json`,
+		'fixtures/property_group_option.json',
 		JSON.stringify(propertyIds.body.data),
 	);
 	console.log(`Collected ${propertyIds.body.data.length} property ids`);

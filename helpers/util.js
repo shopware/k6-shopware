@@ -18,8 +18,7 @@ export function postFormData(url, data, tag) {
 
 	const params = {
 		headers: {
-			'Content-Type':
-				'multipart/form-data; boundary=' + formData.boundary,
+			'Content-Type': `multipart/form-data; boundary=${formData.boundary}`,
 		},
 		tags: {
 			name: tag,
@@ -44,12 +43,11 @@ export function postFormData(url, data, tag) {
 		// Make the GET request to the redirect URL
 		const redirectResponse = http.get(redirectUrl, {
 			tags: {
-				name: tag + '_redirect',
+				name: `${tag}_redirect`,
 			},
 		});
 
 		return redirectResponse;
-	} else {
-		return response;
 	}
+	return response;
 }
