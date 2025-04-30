@@ -2,7 +2,6 @@ import { ApiClient } from './api-client.ts';
 import * as fs from 'fs';
 import { parseArgs } from 'node:util';
 
-// Parse command line arguments
 const { values } = parseArgs({
 	options: {
 		'seo-urls': {
@@ -24,6 +23,10 @@ if (values.help) {
 	console.log('  --seo-urls <number>  Limit the number of SEO URLs to fetch');
 	console.log('  --help              Show this help information');
 	process.exit(0);
+}
+
+if (!fs.existsSync('fixtures')) {
+	fs.mkdirSync('fixtures')
 }
 
 const seoUrlsLimit = values['seo-urls'] ? parseInt(values['seo-urls'] as string, 10) : undefined;
