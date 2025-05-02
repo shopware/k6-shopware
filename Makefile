@@ -51,6 +51,8 @@ run:
 	@echo "Running k6 Docker image..."
 	@docker run \
 	    -it \
+		--ulimit nofile=10000 \
+		--add-host=sw-bench.de:157.180.91.13 \
 		-p 5665:5665 \
 		-e K6_WEB_DASHBOARD=true \
 	    -e K6_WEB_DASHBOARD_HOST=0.0.0.0 \
