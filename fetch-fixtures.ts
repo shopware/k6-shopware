@@ -1,18 +1,18 @@
-import { ApiClient } from './api-client.ts';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 import { parseArgs } from 'node:util';
+import { ApiClient } from './api-client.ts';
 
 const { values } = parseArgs({
 	options: {
 		'seo-urls': {
 			type: 'string',
-			description: 'Limit the number of SEO URLs to fetch'
+			description: 'Limit the number of SEO URLs to fetch',
 		},
-		'help': {
+		help: {
 			type: 'boolean',
-			description: 'Show help information'
-		}
-	}
+			description: 'Show help information',
+		},
+	},
 });
 
 // Display help if requested
@@ -26,10 +26,12 @@ if (values.help) {
 }
 
 if (!fs.existsSync('fixtures')) {
-	fs.mkdirSync('fixtures')
+	fs.mkdirSync('fixtures');
 }
 
-const seoUrlsLimit = values['seo-urls'] ? parseInt(values['seo-urls'] as string, 10) : undefined;
+const seoUrlsLimit = values['seo-urls']
+	? Number.parseInt(values['seo-urls'] as string, 10)
+	: undefined;
 
 const apiClient = new ApiClient(
 	process.env.SHOP_URL as string,
@@ -197,8 +199,10 @@ async function fetchSeoUrls(name: string) {
 			// Split product IDs into batches of 500
 			for (let i = 0; i < productIds.length; i += batchSize) {
 				const batch = productIds.slice(i, i + batchSize);
-				
-				const filteredProductIds = await apiClient.post<{ data: string[] }>(
+
+				const filteredProductIds = await apiClient.post<{
+					data: string[];
+				}>(
 					'/search-ids/product',
 					{
 						ids: batch,
@@ -239,7 +243,9 @@ async function fetchSeoUrls(name: string) {
 				allFilteredIds.push(...filteredProductIds.body.data);
 			}
 			// Filter the data using all collected IDs
-			allData = allData.filter((seoUrl) => allFilteredIds.includes(seoUrl.id));
+			allData = allData.filter((seoUrl) =>
+				allFilteredIds.includes(seoUrl.id),
+			);
 		}
 	}
 

@@ -6,7 +6,7 @@ import {
 	seoListingPage,
 	seoProductDetailPage,
 } from './data.js';
-import { getRandomItem, postFormData, httpGet } from './util.js';
+import { getRandomItem, httpGet, postFormData } from './util.js';
 
 export function visitStorefront(trend, counter) {
 	const stepStart = Date.now();
