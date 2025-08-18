@@ -86,27 +86,29 @@ async function fetchSalesChannel() {
 		{},
 	);
 
-	const records = response.body.data.map((record) => {
-		return {
-			id: record.id,
-			name: record.name,
-			accessKey: record.accessKey,
-			url: record.domains[0].url,
-			countryIds: record.countries.map((e) => e.id),
-			salutationIds: salutationIds.body.data,
-			taxIds: taxIds.body.data,
-			api: {
-				baseURL: `${process.env.SHOP_URL}/api`,
-				credentials: {
-					grant_type: 'password',
-					client_id: 'administration',
-					scopes: 'write',
-					username: process.env.SHOP_ADMIN_USERNAME as string,
-					password: process.env.SHOP_ADMIN_PASSWORD as string,
+	const records = response.body.data
+		.filter((record) => record.domains && record.domains.length > 0)
+		.map((record) => {
+			return {
+				id: record.id,
+				name: record.name,
+				accessKey: record.accessKey,
+				url: record.domains[0].url,
+				countryIds: record.countries.map((e) => e.id),
+				salutationIds: salutationIds.body.data,
+				taxIds: taxIds.body.data,
+				api: {
+					baseURL: `${process.env.SHOP_URL}/api`,
+					credentials: {
+						grant_type: 'password',
+						client_id: 'administration',
+						scopes: 'write',
+						username: process.env.SHOP_ADMIN_USERNAME as string,
+						password: process.env.SHOP_ADMIN_PASSWORD as string,
+					},
 				},
-			},
-		};
-	});
+			};
+		});
 
 	fs.writeFileSync('fixtures/sales-channel.json', JSON.stringify(records));
 	console.log(`Collected ${records.length} sales channels`);
