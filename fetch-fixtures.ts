@@ -126,7 +126,8 @@ async function fetchSeoUrls(name: string) {
 	let allData: { url: string; id: string }[] = [];
 	let hasMorePages = true;
 
-	while (hasMorePages) {
+	const maxPages = 100;
+	while (hasMorePages && page <= maxPages) {
 		// If we have a limit and we've reached it, stop fetching
 		if (limit !== undefined && allData.length >= limit) {
 			console.log(`Reached limit of ${limit} SEO URLs for ${name}`);
