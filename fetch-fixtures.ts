@@ -126,7 +126,10 @@ async function fetchSeoUrls(name: string) {
 	let allData: { url: string; id: string }[] = [];
 	let hasMorePages = true;
 
-	const maxPages = 100;
+	const maxPages = process.env.MAX_PAGES
+		? Number.parseInt(process.env.MAX_PAGES as string, 10)
+		: 100;
+
 	while (hasMorePages && page <= maxPages) {
 		// If we have a limit and we've reached it, stop fetching
 		if (limit !== undefined && allData.length >= limit) {
