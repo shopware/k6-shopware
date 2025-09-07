@@ -12,5 +12,8 @@
 	"dependencies": {
 		"@types/bun": "^1.0.4",
 		"crawlee": "^3.12.1"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.2.3"
 	}
 }

@@ -2,7 +2,6 @@ import { check } from 'k6';
 import http from 'k6/http';
 import {
 	media,
-	propertyGroupOption,
 	salesChannel,
 	seoListingPage,
 	seoProductDetailPage,

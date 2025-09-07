@@ -1,5 +1,4 @@
-import { Counter } from 'k6/metrics';
-import { Trend } from 'k6/metrics';
+import { Counter, Trend } from 'k6/metrics';
 import {
 	fetchBearerToken,
 	productChangePrice,
