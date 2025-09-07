@@ -1,11 +1,11 @@
 import fs from 'node:fs';
-import { CheerioCrawler, Dataset, log } from 'crawlee';
+import { CheerioCrawler, log } from 'crawlee';
 
 const crawler = new CheerioCrawler({
 	minConcurrency: 50,
 	maxConcurrency: 200, // Adjust concurrency
 	requestHandler: async ({ request, response, body, contentType }) => {
-		const statusCode = response?.statusCode || 'unknown';
+		const _statusCode = response?.statusCode || 'unknown';
 		//log.info(`Fetched: ${request.url} - Status Code: ${statusCode}`);
 	},
 	failedRequestHandler: async ({ request }) => {

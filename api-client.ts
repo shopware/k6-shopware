@@ -175,7 +175,7 @@ export class ApiClient {
 			return this.storage.token as string;
 		}
 
-		if (this.storage.expiresIn.getTime() < new Date().getTime()) {
+		if (this.storage.expiresIn.getTime() < Date.now()) {
 			// Expired
 
 			this.storage.expiresIn = null;
