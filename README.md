@@ -23,6 +23,10 @@ The example scenario will create a new customer, add a product to the cart and c
 
 You can adjust with `-u USERS --iterations ITERATORS` how often this and parallel this scenario should run.
 
+## Optional: Storefront Basic Auth
+
+If your storefront is protected by HTTP Basic Authentication, you can provide credentials via the environment variables `STOREFRONT_USERNAME` and `STOREFRONT_PASSWORD`.
+
 ## For more information
 
 See the [K6 documentation](https://k6.io/docs/) or the [Shopware Documentation](https://developer.shopware.com/docs/guides/hosting/performance/k6.html).

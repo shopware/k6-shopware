@@ -8,6 +8,8 @@ RUN \
     --mount=type=secret,id=SHOP_URL,env=SHOP_URL \
     --mount=type=secret,id=SHOP_ADMIN_USERNAME,env=SHOP_ADMIN_USERNAME \
     --mount=type=secret,id=SHOP_ADMIN_PASSWORD,env=SHOP_ADMIN_PASSWORD \
+    --mount=type=secret,id=STOREFRONT_USERNAME,env=STOREFRONT_USERNAME \
+    --mount=type=secret,id=STOREFRONT_PASSWORD,env=STOREFRONT_PASSWORD \
     bun run fetch-fixtures.ts
 
 

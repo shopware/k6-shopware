@@ -1,5 +1,7 @@
+import { b64encode } from 'k6/encoding';
 import http from 'k6/http';
 import { FormData } from '../lib/form-data.js';
+import { salesChannel } from './data.js';
 
 export function between(min, max) {
 	return Math.floor(Math.random() * (max - min + 1) + min);
@@ -16,6 +18,16 @@ export function httpGet(url, params = {}) {
 
 	params.headers['Accept-Encoding'] = 'zstd, gzip';
 
+	if (
+		salesChannel[0]?.storefrontUsername &&
+		salesChannel[0].storefrontPassword
+	) {
+		const token = b64encode(
+			`${salesChannel[0].storefrontUsername}:${salesChannel[0].storefrontPassword}`,
+		);
+		params.headers.Authorization = `Basic ${token}`;
+	}
+
 	return http.get(url, params);
 }
 
@@ -26,11 +38,23 @@ export function postFormData(url, data, tag) {
 		formData.append(key, data[key]);
 	}
 
+	const headers = {
+		'Content-Type': `multipart/form-data; boundary=${formData.boundary}`,
+		'Accept-Encoding': 'zstd, gzip',
+	};
+
+	if (
+		salesChannel[0]?.storefrontUsername &&
+		salesChannel[0].storefrontPassword
+	) {
+		const token = b64encode(
+			`${salesChannel[0].storefrontUsername}:${salesChannel[0].storefrontPassword}`,
+		);
+		headers.Authorization = `Basic ${token}`;
+	}
+
 	const params = {
-		headers: {
-			'Content-Type': `multipart/form-data; boundary=${formData.boundary}`,
-			'Accept-Encoding': 'zstd, gzip',
-		},
+		headers,
 		tags: {
 			name: tag,
 		},
