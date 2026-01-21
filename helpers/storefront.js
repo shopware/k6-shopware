@@ -24,7 +24,7 @@ export function accountRegister(trend, counter) {
 		Math.random().toString(36).substring(2, 15) +
 		Math.random().toString(36).substring(2, 15);
 
-	const email = `${randomString}@test.de`;
+	const email = `${randomString}@example.com`;
 
 	const stepStart = Date.now();
 	const register = postFormData(
@@ -60,7 +60,7 @@ export function guestRegister(trend, counter) {
 		Math.random().toString(36).substring(2, 15) +
 		Math.random().toString(36).substring(2, 15);
 
-	const email = `${randomString}@test.de`;
+	const email = `${randomString}@example.com`;
 
 	// guest "registration" with `guest: true`
 	const stepStart = Date.now();
