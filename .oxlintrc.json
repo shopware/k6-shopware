@@ -1,3 +1,6 @@
 {
-	"ignorePatterns": ["lib/*.js"]
+  "ignorePatterns": ["lib/*.js"],
+  "rules": {
+    "no-unused-vars": "error"
+  }
 }
