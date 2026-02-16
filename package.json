@@ -1,19 +1,21 @@
 {
-	"name": "k6-shopware",
-	"version": "1.0.0",
-	"description": "",
-	"type": "module",
-	"main": "benchmark.js",
-	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1"
-	},
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"@types/bun": "^1.0.4",
-		"crawlee": "^3.12.1"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "2.2.3"
-	}
+  "name": "k6-shopware",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "benchmark.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/bun": "^1.0.4",
+    "crawlee": "^3.12.1"
+  },
+  "devDependencies": {
+    "oxlint": "^1.47.0"
+  }
 }

@@ -10,9 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Biome
-        uses: biomejs/setup-biome@v2
+      - name: Setup oxlint
+        uses: oxc-project/setup-oxlint@v0
         with:
           version: latest
-      - name: Run Biome
-        run: biome ci .
+      - name: Run oxlint
+        run: oxlint
