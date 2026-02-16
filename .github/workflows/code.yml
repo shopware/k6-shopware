@@ -11,8 +11,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup oxlint
-        uses: oxc-project/setup-oxlint@v0
+        uses: oxc-project/oxlint-action@v2.0.1
         with:
+          config: .oxlintrc.json
           version: latest
       - name: Run oxlint
         run: oxlint
