@@ -21,7 +21,7 @@ export function getStoreApiContextToken(response) {
   try {
     const body = response.json();
     return body?.token || body?.contextToken || "";
-  } catch (_error) {
+  } catch {
     return "";
   }
 }

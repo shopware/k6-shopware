@@ -34,7 +34,7 @@ export function fetchMainNavigationViaStoreApi(trend, counter) {
     const body = resp.json();
     const categories = body?.children || body?.data?.children || [];
     return { categories, status: resp.status, body };
-  } catch (_error) {
+  } catch {
     return { categories: [], status: resp.status };
   }
 }
@@ -45,7 +45,6 @@ export function fetchNavigationAndCategoriesViaStoreApi(
   categoryTrend,
   categoryCounter
 ) {
-  const flowStart = Date.now();
   const navigationResult = fetchMainNavigationViaStoreApi(
     navigationTrend,
     navigationCounter

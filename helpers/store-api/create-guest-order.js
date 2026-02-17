@@ -114,7 +114,7 @@ export function createGuestOrderViaStoreApi(trend, counter, quantity = 1) {
     try {
       const orderBody = createOrderResp.json();
       orderErrorDetail = orderBody?.errors?.[0]?.detail || "";
-    } catch (_error) {
+    } catch {
       orderErrorDetail = "";
     }
 
