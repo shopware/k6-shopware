@@ -56,6 +56,7 @@ k6 run --vus 10 --duration 30s tests/api/example-register-user.js
 | `example-add-user-address.js` | Creates a context, registers a user, and adds a new address via the `account/address` endpoint. |
 | `example-fetch-category.js` | Fetches a random category listing page via the `category` endpoint. |
 | `example-fetch-navigation-categories.js` | Fetches the main navigation and then fetches each child category via the `navigation` and `category` endpoints. |
+| `example-fetch-payment-methods.js` | Creates a context and fetches available payment methods via the `checkout/payment-method` endpoint. |
 | `example-guest-order-store-api.js` | Full guest checkout flow: creates context, adds product to cart, registers as guest, and places an order. Supports `PRODUCT_QUANTITY` env variable. |
 
 ### Customising payloads

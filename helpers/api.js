@@ -18,6 +18,7 @@ export {
   fetchMainNavigationViaStoreApi,
   fetchNavigationAndCategoriesViaStoreApi,
 } from "./store-api/fetch-navigation.js";
+export { fetchPaymentMethodsViaStoreApi } from "./store-api/fetch-payment-methods.js";
 
 function uuidv4() {
   return "xxxxxxxxxxxx4xxxyxxxxxxxxxxxxxxx".replace(/[xy]/g, (c) => {
