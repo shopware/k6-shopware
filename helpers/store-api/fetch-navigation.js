@@ -2,6 +2,27 @@ import { check } from "k6";
 import http from "k6/http";
 import { salesChannel } from "../data.js";
 
+/**
+ * Recursively collects all category IDs from the navigation tree (including nested children).
+ * @param {Array} categories - Navigation items (may have .id and .children)
+ * @returns {string[]} Flat array of category IDs
+ */
+function collectCategoryIdsFromNavigation(categories) {
+  if (!Array.isArray(categories) || categories.length === 0) {
+    return [];
+  }
+  const ids = [];
+  for (const item of categories) {
+    if (item?.id) {
+      ids.push(item.id);
+    }
+    if (Array.isArray(item?.children) && item.children.length > 0) {
+      ids.push(...collectCategoryIdsFromNavigation(item.children));
+    }
+  }
+  return ids;
+}
+
 export function fetchMainNavigationViaStoreApi(trend, counter) {
   const stepStart = Date.now();
   const resp = http.post(
@@ -49,7 +70,7 @@ export function fetchNavigationAndCategoriesViaStoreApi(
     navigationTrend,
     navigationCounter
   );
-  console.log(`Navigation result: ${navigationResult.categories}`);
+
   if (navigationResult.status !== 200 || !navigationResult.categories) {
     return {
       navigationStatus: navigationResult.status,
@@ -58,19 +79,16 @@ export function fetchNavigationAndCategoriesViaStoreApi(
     };
   }
 
+  const categoryIds = collectCategoryIdsFromNavigation(
+    navigationResult.categories
+  );
   const categoryStatuses = [];
   let categoriesFetched = 0;
-  console.log(`Navigation categories: ${navigationResult.categories.length}`);
-  //TODO: Fix category reading
-  for (const category of navigationResult.categories) {
-    console.log(`Fetching category: ${category.id}`);
-    if (!category?.id) {
-      continue;
-    }
 
+  for (const categoryId of categoryIds) {
     const categoryStepStart = Date.now();
     const categoryResp = http.post(
-      `${salesChannel[0].url}/store-api/category/${category.id}`,
+      `${salesChannel[0].url}/store-api/category/${categoryId}`,
       "{}",
       {
         headers: {
@@ -87,18 +105,18 @@ export function fetchNavigationAndCategoriesViaStoreApi(
     categoryCounter.add(1);
 
     const categorySuccess = check(categoryResp, {
-      [`Store API category ${category.id} fetch is successful`]: (r) =>
+      [`Store API category ${categoryId} fetch is successful`]: (r) =>
         r.status === 200,
     });
 
     if (!categorySuccess) {
       console.log(
-        `Store API category ${category.id} fetch failed: ${categoryResp.body}`
+        `Store API category ${categoryId} fetch failed: ${categoryResp.body}`
       );
     }
 
     categoryStatuses.push({
-      categoryId: category.id,
+      categoryId,
       status: categoryResp.status,
     });
 
@@ -110,7 +128,7 @@ export function fetchNavigationAndCategoriesViaStoreApi(
   return {
     navigationStatus: navigationResult.status,
     categoriesFetched,
-    totalCategories: navigationResult.categories.length,
+    totalCategories: categoryIds.length,
     categoryStatuses,
   };
 }

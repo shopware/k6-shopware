@@ -56,9 +56,6 @@ export function accountRegister(trend, counter) {
     console.error(
       `Account creation failed for email: ${email}, status: ${register.status}`
     );
-    // if (register.status !== 200) {
-    //   console.error(`Response body: ${register.body}`);
-    // }
   }
 
   return email;
