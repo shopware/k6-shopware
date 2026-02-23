@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchSitemapViaStoreApi } from "../../helpers/api.js";
+import { fetchSitemapViaStoreApi } from "../../helpers/store-api/fetch-sitemap.js";
 
 const APIFetchSitemapRT = new Trend("response_time_API_fetchSitemap");
 const APIFetchSitemapCounter = new Counter("counter_API_fetchSitemap");

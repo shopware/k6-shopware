@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchProductDetailViaStoreApi } from "../../helpers/api.js";
+import { fetchProductDetailViaStoreApi } from "../../helpers/store-api/fetch-product-detail.js";
 
 const APIFetchProductDetailRT = new Trend(
   "response_time_API_fetchProductDetail"

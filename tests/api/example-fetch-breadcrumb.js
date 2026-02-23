@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchBreadcrumbViaStoreApi } from "../../helpers/api.js";
+import { fetchBreadcrumbViaStoreApi } from "../../helpers/store-api/fetch-breadcrumb.js";
 
 const APIFetchBreadcrumbRT = new Trend("response_time_API_fetchBreadcrumb");
 const APIFetchBreadcrumbCounter = new Counter("counter_API_fetchBreadcrumb");

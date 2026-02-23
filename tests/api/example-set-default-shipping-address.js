@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { setDefaultShippingAddressViaStoreApi } from "../../helpers/api.js";
+import { setDefaultShippingAddressViaStoreApi } from "../../helpers/store-api/set-default-shipping-address.js";
 
 const APISetDefaultShippingRT = new Trend(
   "response_time_API_setDefaultShippingAddress"

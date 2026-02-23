@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchCheckoutGatewayViaStoreApi } from "../../helpers/api.js";
+import { fetchCheckoutGatewayViaStoreApi } from "../../helpers/store-api/fetch-checkout-gateway.js";
 
 const APIFetchCheckoutGatewayRT = new Trend(
   "response_time_API_fetchCheckoutGateway"

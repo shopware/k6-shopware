@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchPaymentMethodsViaStoreApi } from "../../helpers/api.js";
+import { fetchPaymentMethodsViaStoreApi } from "../../helpers/store-api/fetch-payment-methods.js";
 
 const APIFetchPaymentMethodsRT = new Trend(
   "response_time_API_fetchPaymentMethods"

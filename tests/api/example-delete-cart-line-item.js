@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { deleteCartLineItemViaStoreApi } from "../../helpers/api.js";
+import { deleteCartLineItemViaStoreApi } from "../../helpers/store-api/delete-cart-line-item.js";
 
 const APIDeleteCartLineItemRT = new Trend(
   "response_time_API_deleteCartLineItem"

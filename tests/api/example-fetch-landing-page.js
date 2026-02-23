@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchLandingPageViaStoreApi } from "../../helpers/api.js";
+import { fetchLandingPageViaStoreApi } from "../../helpers/store-api/fetch-landing-page.js";
 
 const APIFetchLandingPageRT = new Trend("response_time_API_fetchLandingPage");
 const APIFetchLandingPageCounter = new Counter(

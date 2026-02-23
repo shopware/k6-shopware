@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { deleteFromWishlistViaStoreApi } from "../../helpers/api.js";
+import { deleteFromWishlistViaStoreApi } from "../../helpers/store-api/delete-from-wishlist.js";
 
 const APIDeleteFromWishlistRT = new Trend(
   "response_time_API_deleteFromWishlist"

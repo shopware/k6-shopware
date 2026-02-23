@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { createGuestOrderViaStoreApi } from "../../helpers/api.js";
+import { createGuestOrderViaStoreApi } from "../../helpers/store-api/create-guest-order.js";
 
 const APIGuestOrderRT = new Trend("response_time_API_guestOrder_storeApi");
 const APIGuestOrderCounter = new Counter("counter_API_guestOrder_storeApi");

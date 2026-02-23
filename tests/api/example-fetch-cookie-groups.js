@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchCookieGroupsViaStoreApi } from "../../helpers/api.js";
+import { fetchCookieGroupsViaStoreApi } from "../../helpers/store-api/fetch-cookie-groups.js";
 
 const APIFetchCookieGroupsRT = new Trend(
   "response_time_API_fetchCookieGroups"

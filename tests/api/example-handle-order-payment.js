@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { handleOrderPaymentViaStoreApi } from "../../helpers/api.js";
+import { handleOrderPaymentViaStoreApi } from "../../helpers/store-api/handle-order-payment.js";
 
 const APIHandleOrderPaymentRT = new Trend(
   "response_time_API_handleOrderPayment"

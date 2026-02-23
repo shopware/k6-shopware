@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { fetchCurrenciesViaStoreApi } from "../../helpers/api.js";
+import { fetchCurrenciesViaStoreApi } from "../../helpers/store-api/fetch-currencies.js";
 
 const APIFetchCurrenciesRT = new Trend("response_time_API_fetchCurrencies");
 const APIFetchCurrenciesCounter = new Counter("counter_API_fetchCurrencies");

@@ -1,5 +1,5 @@
 import { Counter, Trend } from "k6/metrics";
-import { setDefaultBillingAddressViaStoreApi } from "../../helpers/api.js";
+import { setDefaultBillingAddressViaStoreApi } from "../../helpers/store-api/set-default-billing-address.js";
 
 const APISetDefaultBillingRT = new Trend(
   "response_time_API_setDefaultBillingAddress"
