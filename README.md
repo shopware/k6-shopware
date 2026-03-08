@@ -44,7 +44,7 @@ k6 run --vus 10 --duration 30s tests/api/register-user.js
 | Variable | Default | Description |
 |---|---|---|
 | `PRODUCT_COUNT` | `1` | Number of products to add to the cart. Used by `add-product.js` |
-| `PRODUCT_QUANTITY` | `1` | Quantity per product in the cart. Used by `guest-order-store-api.js` |
+| `PRODUCT_QUANTITY` | `1` | Quantity per product in the cart. Used by `guest-order-store-api.js` and story tests. |
 | `LANDING_PAGE_ID` | _(none)_ | Landing page ID. Required by `fetch-landing-page.js` |
 
 ### Available tests
@@ -93,6 +93,22 @@ k6 run --vus 10 --duration 30s tests/api/register-user.js
 | `fetch-seo-url.js` | Fetches SEO URLs via the `seo-url` endpoint. |
 | `fetch-sitemap.js` | Fetches the sitemap index via the `sitemap` endpoint. |
 | `fetch-info-routes.js` | Fetches the route list via the `_info/routes` endpoint (smoke test). |
+
+### Story tests
+
+Full end-to-end story tests that compose multiple Store API endpoints into realistic user journeys. Located in `tests/api/stories/`.
+
+```bash
+k6 run tests/api/stories/<story-file>.js
+```
+
+Each story creates a fresh user per iteration, so no external credentials are needed.
+
+| Story file | Description |
+|---|---|
+| `checkout.js` | Full checkout with new user registration: context, register, fetch products, add to cart, fetch cart, shipping methods, payment methods, checkout gateway, place order. |
+| `logged-in-add-to-cart.js` | Registers a new user, logs in, then adds a product to cart: context, register, login, fetch products, add to cart, fetch cart. |
+| `logged-in-checkout.js` | Registers a new user, logs in, then completes full checkout: context, register, login, fetch products, add to cart, fetch cart, shipping methods, payment methods, checkout gateway, place order. |
 
 ### Customising payloads
 
