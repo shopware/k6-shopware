@@ -61,7 +61,7 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
     email,
     countryId: salesChannel[0].countryIds[0],
     storefrontUrl: salesChannel[0].url,
-    guest: false,
+    guest: true,
   });
 
   stepStart = Date.now();
