@@ -105,13 +105,12 @@ export function fetchNavigationAndCategoriesViaStoreApi(
     categoryCounter.add(1);
 
     const categorySuccess = check(categoryResp, {
-      [`Store API category ${categoryId} fetch is successful`]: (r) =>
-        r.status === 200,
+      "Store API category fetch is successful": (r) => r.status === 200,
     });
 
     if (!categorySuccess) {
       console.log(
-        `Store API category ${categoryId} fetch failed: ${categoryResp.body}`
+        `Store API category fetch failed (categoryId=${categoryId}): ${categoryResp.body}`
       );
     }
 

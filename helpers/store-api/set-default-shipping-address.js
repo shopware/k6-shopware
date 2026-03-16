@@ -70,6 +70,12 @@ export function setDefaultShippingAddressViaStoreApi(trend, counter) {
     console.log(
       `Store API set default shipping address skipped: no addressId returned`
     );
+    trend.add(Date.now() - flowStart);
+    counter.add(1);
+    check(null, {
+      "Store API set default shipping address: addressId returned": () =>
+        false,
+    });
     return { email, addressId: null, status: 0 };
   }
 

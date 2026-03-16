@@ -30,3 +30,18 @@ export function mergeContextToken(currentToken, response) {
   const nextToken = getStoreApiContextToken(response);
   return nextToken || currentToken;
 }
+
+/**
+ * Parses the Store API product list response and returns the first product id, or null.
+ * Supports common shapes: { elements }, { data }, { products: { elements } }.
+ */
+export function getFirstProductIdFromProductListResponse(response) {
+  try {
+    const body = response.json();
+    const elements = body?.elements ?? body?.data ?? body?.products?.elements ?? [];
+    const first = Array.isArray(elements) ? elements[0] : null;
+    return first?.id ?? null;
+  } catch {
+    return null;
+  }
+}

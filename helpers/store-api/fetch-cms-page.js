@@ -4,6 +4,7 @@ import { salesChannel, seoListingPage } from "../data.js";
 import { getRandomItem } from "../util.js";
 
 export function fetchCmsPageViaStoreApi(trend, counter) {
+  const flowStart = Date.now();
   const category = getRandomItem(seoListingPage);
 
   const categoryResp = http.post(
@@ -31,6 +32,11 @@ export function fetchCmsPageViaStoreApi(trend, counter) {
     console.log(
       `Store API fetch CMS page skipped: no cmsPageId found for category ${category.id}`
     );
+    trend.add(Date.now() - flowStart);
+    counter.add(1);
+    check(categoryResp, {
+      "Store API fetch CMS page: cmsPageId from category response": () => false,
+    });
     return { categoryId: category.id, cmsPageId: null, status: 0 };
   }
 

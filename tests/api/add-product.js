@@ -4,12 +4,12 @@ import { addProductToCartViaStoreApi } from "../../helpers/store-api/add-product
 const APIAddProductRT = new Trend("response_time_API_addProduct");
 const APIAddProductCounter = new Counter("counter_API_addProduct");
 
-const productCount = Number(__ENV.PRODUCT_COUNT || 1);
+const productQuantity = Number(__ENV.PRODUCT_QUANTITY || 1);
 
 export default function () {
   addProductToCartViaStoreApi(
     APIAddProductRT,
     APIAddProductCounter,
-    productCount
+    productQuantity
   );
 }

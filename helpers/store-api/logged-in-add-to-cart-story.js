@@ -1,11 +1,11 @@
 import { check } from "k6";
 import http from "k6/http";
-import { salesChannel, seoProductDetailPage } from "../data.js";
-import { getRandomItem } from "../util.js";
+import { salesChannel } from "../data.js";
 import {
   randomString,
   getStoreApiContextToken,
   mergeContextToken,
+  getFirstProductIdFromProductListResponse,
 } from "./utils.js";
 import { getRegisterUserPayload } from "./payloads/register-user.js";
 import { getLoginUserPayload } from "./payloads/login-user.js";
@@ -15,6 +15,7 @@ import { getFetchProductsPayload } from "./payloads/fetch-products.js";
 export function loggedInAddToCartStoryViaStoreApi(metrics, quantity = 1) {
   const email = `k6-cart-${Date.now()}-${randomString()}@example.com`;
   const password = `k6-${randomString(16)}`;
+  const baseUrl = salesChannel[0].url;
   const baseHeaders = {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -30,12 +31,15 @@ export function loggedInAddToCartStoryViaStoreApi(metrics, quantity = 1) {
       "sw-context-token": contextToken,
     };
   };
+  const requestOpts = (headers, name) => ({
+    headers,
+    tags: { name },
+  });
 
   // Step 1: Create context
   let stepStart = Date.now();
-  const contextResp = http.get(`${salesChannel[0].url}/store-api/context`, {
-    headers: baseHeaders,
-    tags: { name: "story.logged_in_cart.context" },
+  const contextResp = http.get(`${baseUrl}/store-api/context`, {
+    ...requestOpts(baseHeaders, "story.logged_in_cart.context"),
   });
   metrics.context.trend.add(Date.now() - stepStart);
   metrics.context.counter.add(1);
@@ -64,11 +68,10 @@ export function loggedInAddToCartStoryViaStoreApi(metrics, quantity = 1) {
 
   stepStart = Date.now();
   const registerResp = http.post(
-    `${salesChannel[0].url}/store-api/account/register`,
+    `${baseUrl}/store-api/account/register`,
     JSON.stringify(registerPayload),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.logged_in_cart.register" },
+      ...requestOpts(withContextHeaders(contextToken), "story.logged_in_cart.register"),
     }
   );
   metrics.register.trend.add(Date.now() - stepStart);
@@ -90,11 +93,10 @@ export function loggedInAddToCartStoryViaStoreApi(metrics, quantity = 1) {
   // Step 3: Login with the newly created user
   stepStart = Date.now();
   const loginResp = http.post(
-    `${salesChannel[0].url}/store-api/account/login`,
+    `${baseUrl}/store-api/account/login`,
     JSON.stringify(getLoginUserPayload({ email, password })),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.logged_in_cart.login" },
+      ...requestOpts(withContextHeaders(contextToken), "story.logged_in_cart.login"),
     }
   );
   metrics.login.trend.add(Date.now() - stepStart);
@@ -115,23 +117,33 @@ export function loggedInAddToCartStoryViaStoreApi(metrics, quantity = 1) {
   // Step 4: Fetch products
   stepStart = Date.now();
   const productsResp = http.post(
-    `${salesChannel[0].url}/store-api/product`,
+    `${baseUrl}/store-api/product`,
     JSON.stringify(getFetchProductsPayload({ limit: 10 })),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.logged_in_cart.fetch_products" },
+      ...requestOpts(withContextHeaders(contextToken), "story.logged_in_cart.fetch_products"),
     }
   );
   metrics.fetchProducts.trend.add(Date.now() - stepStart);
   metrics.fetchProducts.counter.add(1);
   contextToken = mergeContextToken(contextToken, productsResp);
 
-  check(productsResp, {
+  const productsOk = check(productsResp, {
     "Logged-in cart story: products fetched": (r) => r.status === 200,
   });
+  const productId = getFirstProductIdFromProductListResponse(productsResp);
+  const hasProduct = check(productsResp, {
+    "Logged-in cart story: product list contains at least one product": () =>
+      productId != null,
+  });
+
+  if (!productsOk || !hasProduct) {
+    console.log(
+      `Logged-in cart story aborted: product fetch failed or empty list (status=${productsResp.status})`
+    );
+    return { success: false, step: "fetchProducts" };
+  }
 
   // Step 5: Add product to cart
-  const productId = getRandomItem(seoProductDetailPage).id;
   const addToCartPayload = getAddToCartPayload({
     lineItemId: `k6-line-item-${Date.now()}-${randomString(6)}`,
     productId,
@@ -140,11 +152,10 @@ export function loggedInAddToCartStoryViaStoreApi(metrics, quantity = 1) {
 
   stepStart = Date.now();
   const addToCartResp = http.post(
-    `${salesChannel[0].url}/store-api/checkout/cart/line-item`,
+    `${baseUrl}/store-api/checkout/cart/line-item`,
     JSON.stringify(addToCartPayload),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.logged_in_cart.add_to_cart" },
+      ...requestOpts(withContextHeaders(contextToken), "story.logged_in_cart.add_to_cart"),
     }
   );
   metrics.addToCart.trend.add(Date.now() - stepStart);
@@ -163,9 +174,8 @@ export function loggedInAddToCartStoryViaStoreApi(metrics, quantity = 1) {
 
   // Step 6: Fetch cart
   stepStart = Date.now();
-  const cartResp = http.get(`${salesChannel[0].url}/store-api/checkout/cart`, {
-    headers: withContextHeaders(contextToken),
-    tags: { name: "story.logged_in_cart.fetch_cart" },
+  const cartResp = http.get(`${baseUrl}/store-api/checkout/cart`, {
+    ...requestOpts(withContextHeaders(contextToken), "story.logged_in_cart.fetch_cart"),
   });
   metrics.fetchCart.trend.add(Date.now() - stepStart);
   metrics.fetchCart.counter.add(1);

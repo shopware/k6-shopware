@@ -70,6 +70,11 @@ export function setDefaultBillingAddressViaStoreApi(trend, counter) {
     console.log(
       `Store API set default billing address skipped: no addressId returned`
     );
+    trend.add(Date.now() - flowStart);
+    counter.add(1);
+    check(null, {
+      "Store API set default billing address: addressId returned": () => false,
+    });
     return { email, addressId: null, status: 0 };
   }
 

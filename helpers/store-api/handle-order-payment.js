@@ -87,6 +87,10 @@ export function handleOrderPaymentViaStoreApi(trend, counter) {
     );
     trend.add(Date.now() - flowStart);
     counter.add(1);
+    check(orderResp, {
+      "Store API handle order payment: orderId from checkout response": () =>
+        false,
+    });
     return { email, orderId: null, status: 0 };
   }
 

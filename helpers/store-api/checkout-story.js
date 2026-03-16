@@ -1,11 +1,11 @@
 import { check } from "k6";
 import http from "k6/http";
-import { salesChannel, seoProductDetailPage } from "../data.js";
-import { getRandomItem } from "../util.js";
+import { salesChannel } from "../data.js";
 import {
   randomString,
   getStoreApiContextToken,
   mergeContextToken,
+  getFirstProductIdFromProductListResponse,
 } from "./utils.js";
 import { getRegisterUserPayload } from "./payloads/register-user.js";
 import { getAddToCartPayload } from "./payloads/add-to-cart.js";
@@ -14,6 +14,7 @@ import { getCreateOrderPayload } from "./payloads/create-order.js";
 
 export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
   const email = `k6-checkout-${Date.now()}-${randomString()}@example.com`;
+  const baseUrl = salesChannel[0].url;
   const baseHeaders = {
     "Content-Type": "application/json",
     Accept: "application/json",
@@ -29,12 +30,15 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
       "sw-context-token": contextToken,
     };
   };
+  const requestOpts = (headers, name) => ({
+    headers,
+    tags: { name },
+  });
 
   // Step 1: Create context
   let stepStart = Date.now();
-  const contextResp = http.get(`${salesChannel[0].url}/store-api/context`, {
-    headers: baseHeaders,
-    tags: { name: "story.checkout.context" },
+  const contextResp = http.get(`${baseUrl}/store-api/context`, {
+    ...requestOpts(baseHeaders, "story.checkout.context"),
   });
   metrics.context.trend.add(Date.now() - stepStart);
   metrics.context.counter.add(1);
@@ -62,11 +66,10 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
 
   stepStart = Date.now();
   const registerResp = http.post(
-    `${salesChannel[0].url}/store-api/account/register`,
+    `${baseUrl}/store-api/account/register`,
     JSON.stringify(registerPayload),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.checkout.register" },
+      ...requestOpts(withContextHeaders(contextToken), "story.checkout.register"),
     }
   );
   metrics.register.trend.add(Date.now() - stepStart);
@@ -88,23 +91,33 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
   // Step 3: Fetch products
   stepStart = Date.now();
   const productsResp = http.post(
-    `${salesChannel[0].url}/store-api/product`,
+    `${baseUrl}/store-api/product`,
     JSON.stringify(getFetchProductsPayload({ limit: 10 })),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.checkout.fetch_products" },
+      ...requestOpts(withContextHeaders(contextToken), "story.checkout.fetch_products"),
     }
   );
   metrics.fetchProducts.trend.add(Date.now() - stepStart);
   metrics.fetchProducts.counter.add(1);
   contextToken = mergeContextToken(contextToken, productsResp);
 
-  check(productsResp, {
+  const productsOk = check(productsResp, {
     "Checkout story: products fetched": (r) => r.status === 200,
   });
+  const productId = getFirstProductIdFromProductListResponse(productsResp);
+  const hasProduct = check(productsResp, {
+    "Checkout story: product list contains at least one product": () =>
+      productId != null,
+  });
+
+  if (!productsOk || !hasProduct) {
+    console.log(
+      `Checkout story aborted: product fetch failed or empty list (status=${productsResp.status})`
+    );
+    return { success: false, step: "fetchProducts" };
+  }
 
   // Step 4: Add product to cart
-  const productId = getRandomItem(seoProductDetailPage).id;
   const addToCartPayload = getAddToCartPayload({
     lineItemId: `k6-line-item-${Date.now()}-${randomString(6)}`,
     productId,
@@ -113,11 +126,10 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
 
   stepStart = Date.now();
   const addToCartResp = http.post(
-    `${salesChannel[0].url}/store-api/checkout/cart/line-item`,
+    `${baseUrl}/store-api/checkout/cart/line-item`,
     JSON.stringify(addToCartPayload),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.checkout.add_to_cart" },
+      ...requestOpts(withContextHeaders(contextToken), "story.checkout.add_to_cart"),
     }
   );
   metrics.addToCart.trend.add(Date.now() - stepStart);
@@ -137,26 +149,46 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
 
   // Step 5: Fetch cart
   stepStart = Date.now();
-  const cartResp = http.get(`${salesChannel[0].url}/store-api/checkout/cart`, {
-    headers: withContextHeaders(contextToken),
-    tags: { name: "story.checkout.fetch_cart" },
+  const cartResp = http.get(`${baseUrl}/store-api/checkout/cart`, {
+    ...requestOpts(withContextHeaders(contextToken), "story.checkout.fetch_cart"),
   });
   metrics.fetchCart.trend.add(Date.now() - stepStart);
   metrics.fetchCart.counter.add(1);
   contextToken = mergeContextToken(contextToken, cartResp);
 
-  check(cartResp, {
+  const cartOk = check(cartResp, {
     "Checkout story: cart fetched": (r) => r.status === 200,
   });
+  let lineItemCount = 0;
+  try {
+    const cartBody = cartResp.json();
+    const raw =
+      cartBody?.lineItems ?? cartBody?.data?.lineItems;
+    const lineItems = Array.isArray(raw)
+      ? raw
+      : raw?.elements ?? [];
+    lineItemCount = Array.isArray(lineItems) ? lineItems.length : 0;
+  } catch {
+    // leave at 0
+  }
+  const cartHasItems = check(cartResp, {
+    "Checkout story: cart has line items": () => lineItemCount > 0,
+  });
+
+  if (!cartOk || !cartHasItems) {
+    console.log(
+      `Checkout story aborted: cart empty or fetch failed (status=${cartResp.status}, lineItems=${lineItemCount})`
+    );
+    return { success: false, step: "fetchCart" };
+  }
 
   // Step 6: Fetch shipping methods
   stepStart = Date.now();
   const shippingResp = http.post(
-    `${salesChannel[0].url}/store-api/shipping-method`,
+    `${baseUrl}/store-api/shipping-method`,
     "{}",
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.checkout.fetch_shipping_methods" },
+      ...requestOpts(withContextHeaders(contextToken), "story.checkout.fetch_shipping_methods"),
     }
   );
   metrics.fetchShippingMethods.trend.add(Date.now() - stepStart);
@@ -170,11 +202,10 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
   // Step 7: Fetch payment methods
   stepStart = Date.now();
   const paymentResp = http.post(
-    `${salesChannel[0].url}/store-api/payment-method`,
+    `${baseUrl}/store-api/payment-method`,
     "{}",
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.checkout.fetch_payment_methods" },
+      ...requestOpts(withContextHeaders(contextToken), "story.checkout.fetch_payment_methods"),
     }
   );
   metrics.fetchPaymentMethods.trend.add(Date.now() - stepStart);
@@ -188,11 +219,10 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
   // Step 8: Fetch checkout gateway
   stepStart = Date.now();
   const gatewayResp = http.post(
-    `${salesChannel[0].url}/store-api/checkout/gateway`,
+    `${baseUrl}/store-api/checkout/gateway`,
     "{}",
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.checkout.gateway" },
+      ...requestOpts(withContextHeaders(contextToken), "story.checkout.gateway"),
     }
   );
   metrics.fetchCheckoutGateway.trend.add(Date.now() - stepStart);
@@ -206,11 +236,10 @@ export function checkoutStoryViaStoreApi(metrics, quantity = 1) {
   // Step 9: Place order
   stepStart = Date.now();
   const orderResp = http.post(
-    `${salesChannel[0].url}/store-api/checkout/order`,
+    `${baseUrl}/store-api/checkout/order`,
     JSON.stringify(getCreateOrderPayload()),
     {
-      headers: withContextHeaders(contextToken),
-      tags: { name: "story.checkout.place_order" },
+      ...requestOpts(withContextHeaders(contextToken), "story.checkout.place_order"),
     }
   );
   metrics.placeOrder.trend.add(Date.now() - stepStart);

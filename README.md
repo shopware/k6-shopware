@@ -43,8 +43,7 @@ k6 run --vus 10 --duration 30s tests/api/register-user.js
 
 | Variable | Default | Description |
 |---|---|---|
-| `PRODUCT_COUNT` | `1` | Number of products to add to the cart. Used by `add-product.js` |
-| `PRODUCT_QUANTITY` | `1` | Quantity per product in the cart. Used by `guest-order-store-api.js` and story tests. |
+| `PRODUCT_QUANTITY` | `1` | Line-item quantity (for a single product). Not the number of distinct products. Used by `add-product.js`, `guest-order-store-api.js`, and story tests. |
 | `LANDING_PAGE_ID` | _(none)_ | Landing page ID. Required by `fetch-landing-page.js` |
 
 ### Available tests
@@ -60,7 +59,7 @@ k6 run --vus 10 --duration 30s tests/api/register-user.js
 | `add-user-address.js` | Creates a context, registers a user, and adds a new address via the `account/address` endpoint. |
 | `set-default-billing-address.js` | Registers a user, adds an address, and sets it as default billing address. |
 | `set-default-shipping-address.js` | Registers a user, adds an address, and sets it as default shipping address. |
-| `add-product.js` | Adds a random product to the cart via the `checkout/cart/line-item` endpoint. Supports `PRODUCT_COUNT` env variable. |
+| `add-product.js` | Adds one random product to the cart via the `checkout/cart/line-item` endpoint. Uses `PRODUCT_QUANTITY` as the line-item quantity (not number of products). |
 | `fetch-cart.js` | Creates a context and fetches the current cart via `checkout/cart`. |
 | `delete-cart-line-item.js` | Adds a product to cart then removes it via `checkout/cart/line-item/delete`. |
 | `fetch-checkout-gateway.js` | Creates a context and fetches checkout gateway options via `checkout/gateway`. |
