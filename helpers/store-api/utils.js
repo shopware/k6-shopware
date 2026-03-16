@@ -1,3 +1,16 @@
+/**
+ * Parses a product quantity from an env or config value.
+ * Returns a finite positive integer; falls back to 1 when the value is NaN, non-finite, or not positive.
+ * Avoids JSON.stringify turning NaN into null in payloads.
+ */
+export function parseProductQuantity(value) {
+  const n = Number(value);
+  if (!Number.isFinite(n) || n < 1) {
+    return 1;
+  }
+  return Math.floor(n);
+}
+
 export function randomString(length = 12) {
   let value = "";
   const chars = "abcdefghijklmnopqrstuvwxyz0123456789";

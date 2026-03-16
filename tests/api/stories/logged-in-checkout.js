@@ -1,5 +1,6 @@
 import { Counter, Trend } from "k6/metrics";
 import { loggedInCheckoutStoryViaStoreApi } from "../../../helpers/store-api/logged-in-checkout-story.js";
+import { parseProductQuantity } from "../../../helpers/store-api/utils.js";
 
 const contextRT = new Trend("response_time_logged_in_checkout_context");
 const contextCounter = new Counter("counter_logged_in_checkout_context");
@@ -49,7 +50,7 @@ const placeOrderCounter = new Counter(
   "counter_logged_in_checkout_placeOrder"
 );
 
-const productQuantity = Number(__ENV.PRODUCT_QUANTITY || 1);
+const productQuantity = parseProductQuantity(__ENV.PRODUCT_QUANTITY);
 
 export default function () {
   loggedInCheckoutStoryViaStoreApi(

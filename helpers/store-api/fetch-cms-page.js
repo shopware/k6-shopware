@@ -40,7 +40,6 @@ export function fetchCmsPageViaStoreApi(trend, counter) {
     return { categoryId: category.id, cmsPageId: null, status: 0 };
   }
 
-  const stepStart = Date.now();
   const resp = http.post(
     `${salesChannel[0].url}/store-api/cms/${cmsPageId}`,
     "{}",
@@ -53,7 +52,7 @@ export function fetchCmsPageViaStoreApi(trend, counter) {
       tags: { name: "api.cms.page.fetch" },
     }
   );
-  trend.add(Date.now() - stepStart);
+  trend.add(Date.now() - flowStart);
   counter.add(1);
 
   const success = check(resp, {

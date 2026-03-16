@@ -1,5 +1,6 @@
 import { Counter, Trend } from "k6/metrics";
 import { loggedInAddToCartStoryViaStoreApi } from "../../../helpers/store-api/logged-in-add-to-cart-story.js";
+import { parseProductQuantity } from "../../../helpers/store-api/utils.js";
 
 const contextRT = new Trend("response_time_logged_in_cart_context");
 const contextCounter = new Counter("counter_logged_in_cart_context");
@@ -21,7 +22,7 @@ const addToCartCounter = new Counter("counter_logged_in_cart_addToCart");
 const fetchCartRT = new Trend("response_time_logged_in_cart_fetchCart");
 const fetchCartCounter = new Counter("counter_logged_in_cart_fetchCart");
 
-const productQuantity = Number(__ENV.PRODUCT_QUANTITY || 1);
+const productQuantity = parseProductQuantity(__ENV.PRODUCT_QUANTITY);
 
 export default function () {
   loggedInAddToCartStoryViaStoreApi(

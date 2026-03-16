@@ -117,7 +117,7 @@ export function accountLogin(
   counter.add(1);
 
   check(login, {
-    "Login successfull": (r) => r.status === 200,
+    "Login successful": (r) => r.status === 200,
   });
 
   visitAccountDashboard(trendAccountDashboard, counterAccountDashboard);

@@ -6,7 +6,7 @@ const crawler = new CheerioCrawler({
   maxConcurrency: 200, // Adjust concurrency
   requestHandler: async ({ response }) => {
     const _statusCode = response?.statusCode || "unknown";
-    //log.info(`Fetched: ${request.url} - Status Code: ${statusCode}`);
+    log.info(`Fetched: ${request.url} - Status Code: ${statusCode}`);
   },
   failedRequestHandler: async ({ request }) => {
     log.error(`Request failed: ${request.url}`);
