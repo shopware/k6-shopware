@@ -4,7 +4,7 @@ import { CheerioCrawler, log } from "crawlee";
 const crawler = new CheerioCrawler({
   minConcurrency: 50,
   maxConcurrency: 200, // Adjust concurrency
-  requestHandler: async ({ response }) => {
+  requestHandler: async ({ request, response }) => {
     const statusCode = response?.statusCode || "unknown";
     log.info(`Fetched: ${request.url} - Status Code: ${statusCode}`);
   },
