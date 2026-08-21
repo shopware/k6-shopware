@@ -94,6 +94,8 @@ async function fetchSalesChannel() {
 				name: record.name,
 				accessKey: record.accessKey,
 				url: record.domains[0].url,
+				storefrontUsername: process.env.STOREFRONT_USERNAME ?? null,
+				storefrontPassword: process.env.STOREFRONT_PASSWORD ?? null,
 				countryIds: record.countries.map((e) => e.id),
 				salutationIds: salutationIds.body.data,
 				taxIds: taxIds.body.data,

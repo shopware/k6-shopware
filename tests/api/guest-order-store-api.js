@@ -1,0 +1,16 @@
+import { Counter, Trend } from "k6/metrics";
+import { createGuestOrderViaStoreApi } from "../../helpers/store-api/create-guest-order.js";
+import { parseProductQuantity } from "../../helpers/store-api/utils.js";
+
+const APIGuestOrderRT = new Trend("response_time_API_guestOrder_storeApi");
+const APIGuestOrderCounter = new Counter("counter_API_guestOrder_storeApi");
+
+const productQuantity = parseProductQuantity(__ENV.PRODUCT_QUANTITY);
+
+export default function () {
+  createGuestOrderViaStoreApi(
+    APIGuestOrderRT,
+    APIGuestOrderCounter,
+    productQuantity
+  );
+}

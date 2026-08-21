@@ -25,6 +25,8 @@ build:
 		--secret id=SHOP_URL,env=SHOP_URL \
 		--secret id=SHOP_ADMIN_USERNAME,env=SHOP_ADMIN_USERNAME \
 		--secret id=SHOP_ADMIN_PASSWORD,env=SHOP_ADMIN_PASSWORD \
+		--secret id=STOREFRONT_USERNAME,env=STOREFRONT_USERNAME \
+		--secret id=STOREFRONT_PASSWORD,env=STOREFRONT_PASSWORD \
 		--load \
 		.
 	@echo "Done!"
@@ -39,6 +41,8 @@ build-without-fetch:
 		--secret id=SHOP_URL,env=SHOP_URL \
 		--secret id=SHOP_ADMIN_USERNAME,env=SHOP_ADMIN_USERNAME \
 		--secret id=SHOP_ADMIN_PASSWORD,env=SHOP_ADMIN_PASSWORD \
+		--secret id=STOREFRONT_USERNAME,env=STOREFRONT_USERNAME \
+		--secret id=STOREFRONT_PASSWORD,env=STOREFRONT_PASSWORD \
 		--load \
 		--target without-fetch \
 		.
